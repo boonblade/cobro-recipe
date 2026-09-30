@@ -1,0 +1,57 @@
+---
+name: cobro-recipe
+description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발견→해결 과정의 레시피(recipe.yaml + 스크롤형 HTML)로 남기고, 쌓인 레시피를 검색한다. 사용자가 /cobro-recipe, "레시피로 남겨", "레시피화", "이 문제 정리해서 남겨", "전에 이런 문제 있었나" 라고 할 때 사용한다. 여러 번 시도한 끝에 까다로운 버그·설계 문제를 해결한 직후에는 Gate 점수를 계산해 레시피로 남길지 제안만 한다(자동 작성 금지). 범용 — 업무 영역과 무관하며, 다른 스킬·외부 라이브러리에 의존하지 않는다.
+---
+
+# cobro-recipe
+
+해결 **과정**을 비개발자도 읽을 수 있는 레시피로 남긴다. 레시피는 대상 프로젝트의 `recipes/`에 쌓이고 검색된다.
+
+## 원칙 (항상)
+
+1. **Gate 먼저.** 4점 미만이면 레시피를 만들지 않는다. 4점 이상이어도 제안만 하고 승인을 받는다.
+2. **근거 없는 서술 금지.** 모든 scene은 commit·file·test·log 근거를 단다. 지어내지 않는다. 사후에 이력으로 재구성했으면 `reconstructed: true`.
+3. **실패를 지우지 않는다.** 실패한 시도는 반드시 `fail` scene으로 남긴다.
+4. **2층 설명.** `plain`은 독자가 매일 보는 것에 빗댄 쉬운 말(2문장 이내), `tech`는 정확한 기술 설명(3문장 이내).
+5. **토큰 절약.** AI는 `recipe.yaml`만 쓴다. HTML·인덱스는 스크립트가 만든다. 아래 표에서 **지금 단계에 필요한 참조만** 읽는다.
+6. **의존성 0.** 다른 스킬을 부르지 않는다. 그림은 내장 부품(`visual.kind`)으로만 지정한다. 스크립트는 Python 3 표준 라이브러리만 쓴다.
+
+## 경로
+
+- `SKILL_DIR` = 이 파일이 있는 폴더. 스크립트: `python3 SKILL_DIR/scripts/<이름>.py`
+- 대상 프로젝트: `recipes/pack.yaml`(로컬 팩), `recipes/R-###-<slug>/recipe.yaml`·`recipe.html`, `recipes/INDEX.json`·`INDEX.md`
+- `recipes/_inbox/`는 `.gitignore`에 넣는다.
+
+## 명령
+
+| 명령 | 할 일 | 읽을 참조 |
+|---|---|---|
+| `init` | 도메인 팩 추출 → 사용자 확인 → `recipes/pack.yaml` 저장 | `references/domain-packs.md` §5, `packs/general.yaml` |
+| (자동 제안) | 해결 직후 Gate 계산 → 4점 이상이면 제안 메시지 1회 | `references/gate-criteria.md` |
+| `write [커밋 범위]` | 레시피 작성 → 검사 → 렌더 → 인덱스 | 아래 "write 절차" |
+| `render <recipe.yaml>` | `render.py` 실행 | – |
+| `index` | `build_index.py recipes` | – |
+| `search <증상>` | `search.py "<증상>"` → 결과 요약. 맞는 레시피가 있으면 해당 `recipe.yaml`만 연다 | – |
+
+명령 없이 스킬이 불렸으면: 상황에 맞는 명령을 고르고, 모르겠으면 `search` → `write` 순으로 묻는다.
+
+## init 절차
+
+1. `recipes/pack.yaml`이 이미 있으면 그것을 보여 주고 끝낸다.
+2. **샘플링만** 한다: README 앞부분, 최상위 디렉터리 구조, 설정 파일(package.json 등)의 이름·설명, `git log --format=%s -50`, 도메인 용어가 많은 파일명. 파일 전체를 읽지 않는다.
+3. `packs/general.yaml` 구조를 따라 `id`, `name`, `description`, `metaphor_source`, `business_readers`, `reviewer`, `domain_knowledge_examples`, `sketch`, `terms`(10~20개, `review: false`)를 채운다.
+4. 요약을 보여 주고 승인·수정을 받은 뒤 저장한다.
+
+## write 절차
+
+1. **재료 수집**: 커밋 범위의 `git log --format='%h %ad %s' --date=short`와 `git show --stat`. 핵심 커밋만 `git show <sha> -- <파일>`로 필요한 부분을 본다. 세션 대화에 시도·실패가 있으면 그것도 쓴다.
+2. **Gate**: `references/gate-criteria.md`로 신호를 고르고 점수를 계산한다(근거 있는 신호만).
+3. **작성**: `templates/recipe.template.yaml`을 복사해 채운다. scene 순서·타입은 `references/scene-types.md`, 쉬운 말은 `references/plain-language-guide.md`와 팩 사전(`recipes/pack.yaml` → `packs/general.yaml`)을 따른다. 새 비유는 로컬 팩 `terms`에 추가한다. 검색용 `search.symptoms`(현업이 말하는 증상)·`errors`(실제 에러 문구)를 채운다. **YAML 주의**: `#`, `? `, `: `, `[ ] { } ,`가 든 문자열과 에러 문구는 큰따옴표로 감싸고, 여러 줄은 `|`를 쓴다.
+4. **검사**: `validate.py recipes/<폴더>/recipe.yaml` — 오류 0이 될 때까지 고친다. 경고는 판단해서 고친다.
+5. **렌더**: `render.py recipes/<폴더>/recipe.yaml [--repo-url <저장소 URL>]`
+6. **인덱스**: `build_index.py recipes`
+7. 사용자에게 결과를 3줄로 보고한다: 제목·Gate 점수, 파일 경로, 검토가 필요한 부분(`review: false` 비유, 근거가 약한 scene).
+
+## 그림 부품 (`visual.kind`)
+
+`compare-grid`(조건별 성공/실패) · `table`(매트릭스) · `code-diff`(`snippet` 또는 `before`/`after`) · `diagram`(`type: flow`=단계 흐름 `spec.steps`, `pair`=짝 연결 `spec.left/right/pairs`, `before-after`=`spec.before/after`) · `image`(`src`,`alt`) · `svg`(부품으로 안 될 때만). 모두 `caption`(선택)을 가질 수 있다.

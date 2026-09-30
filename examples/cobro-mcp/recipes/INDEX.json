@@ -1,0 +1,57 @@
+{
+ "version": 1,
+ "recipes": [
+  {
+   "id": "R-001",
+   "slug": "cross-tab-drafts",
+   "title": "여러 탭에서 쓴 초안 지키기",
+   "status": "review",
+   "pack": "cobro-mcp",
+   "domain": [
+    "overlay",
+    "core",
+    "multi-tab",
+    "draft",
+    "state"
+   ],
+   "gate": 6,
+   "plain": "한 탭에서 써 둔 메모가 다른 탭에서 메모를 고치면 사라졌다. 탭마다 자기 페이지 메모만 바꾸게 하고, 메모의 페이지 이름표도 보낸 탭이 직접 달게 해서 해결했다.",
+   "tech": "draft 메시지 처리를 전체 교체에서 페이지 단위 교체로 바꾸고(R177), 새 초안의 page를 전역 s.page가 아니라 메시지를 보낸 탭의 page로 찍으며 교체 대상 id는 유지 목록에서 제외했다(Task 69 B1).",
+   "symptoms": [
+    "다른 탭에서 메모를 쓰면 앞 탭 메모가 사라짐",
+    "초안이 두 개로 늘어남",
+    "메모의 페이지 이름표가 틀림",
+    "탭 여는 순서에 따라 결과가 다름"
+   ],
+   "errors": [],
+   "keywords": [
+    "draft",
+    "setDrafts",
+    "samePage",
+    "multi-tab",
+    "global state",
+    "s.page",
+    "stamp",
+    "R177",
+    "Task 69 B1"
+   ],
+   "scene_titles": [
+    "다른 탭에서 쓰면 앞 탭 메모가 사라진다",
+    "초안 메시지가 \"전부 바꾸기\"였다",
+    "시도 1: 페이지 단위로 바꾸기",
+    "여는 순서를 바꾸면 이름표가 틀리고 메모가 둘로 는다",
+    "칠판이 하나뿐이었다",
+    "보낸 탭이 이름표를 단다",
+    "옛 버전 탭과 주소 비교 규칙",
+    "탭 순서를 바꿔도 메모가 지켜진다"
+   ],
+   "related": [],
+   "as_of": {
+    "commit": "5cc9d99",
+    "date": "2026-09-24"
+   },
+   "yaml": "R-001-cross-tab-drafts/recipe.yaml",
+   "html": "R-001-cross-tab-drafts/recipe.html"
+  }
+ ]
+}

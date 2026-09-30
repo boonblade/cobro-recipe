@@ -1,6 +1,7 @@
 # cobro-recipe 레시피 양식
 # 저장 위치: <프로젝트>/recipes/<id>-<slug>/recipe.yaml
 # 규칙: references/recipe-schema.md, references/scene-types.md, references/plain-language-guide.md
+# YAML: '#', '? ', ': ', [ ] { } , 가 든 문자열은 큰따옴표로 감싼다. 여러 줄은 | 를 쓴다.
 
 id: R-000
 slug: short-kebab-title
