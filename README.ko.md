@@ -14,7 +14,16 @@ cobro-recipe는 Claude Code 스킬이다. 까다로운 문제가 풀리면 그 �
 
 ## 설치
 
-`.claude/skills/cobro-recipe/` 폴더를 프로젝트의 `.claude/skills/`에 복사한다(모든 저장소에서 쓰려면 `~/.claude/skills/`).
+오픈 [skills](https://github.com/vercel-labs/skills) CLI로:
+
+```bash
+npx skills add boonblade/cobro-recipe            # 이 프로젝트 → .claude/skills/cobro-recipe
+npx skills add boonblade/cobro-recipe -g         # 모든 프로젝트 (사용자 단위)
+npx skills update cobro-recipe                   # 나중에 업데이트
+npx skills remove cobro-recipe                   # 제거
+```
+
+쓰는 에이전트(Claude Code, Cursor, Codex …)를 알아서 찾고(`-a claude-code`로 지정 가능), 출처를 `skills-lock.json`에 기록한다. 직접 설치하려면 `.claude/skills/cobro-recipe/` 폴더를 프로젝트의 `.claude/skills/`(또는 `~/.claude/skills/`)에 복사한다.
 
 Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴다.
 
