@@ -14,7 +14,16 @@ It is general-purpose (web, ERP, infra, 3D, …): on first use it extracts a **d
 
 ## Install
 
-Copy the `.claude/skills/cobro-recipe/` folder into your project's `.claude/skills/` (or `~/.claude/skills/` to use it in every repository).
+With the open [skills](https://github.com/vercel-labs/skills) CLI:
+
+```bash
+npx skills add boonblade/cobro-recipe            # this project → .claude/skills/cobro-recipe
+npx skills add boonblade/cobro-recipe -g         # every project (user level)
+npx skills update cobro-recipe                   # later: update
+npx skills remove cobro-recipe                   # uninstall
+```
+
+It detects your agent (Claude Code, Cursor, Codex, …; pick with `-a claude-code`) and records the source in `skills-lock.json`. Or copy the `.claude/skills/cobro-recipe/` folder into your project's `.claude/skills/` (or `~/.claude/skills/`) by hand.
 
 Requires Python 3.8+ — standard library only; PyYAML is used if present.
 
