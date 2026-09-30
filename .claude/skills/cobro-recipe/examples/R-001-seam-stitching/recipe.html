@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R-001 패턴 두 장을 봉제하기</title>
+<!-- cobro-recipe P0 파일럿: 수작업 렌더. P1 templates/scrolly.html의 기준 레이아웃. -->
+<style>
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1f1d1a; --muted:#6b665e; --line:#e4dfd7;
+  --accent:#b4532a; --accent-soft:#f6e6dc;
+  --ok:#2f7d4f; --ok-soft:#e3f1e8; --warn:#a86a00; --warn-soft:#fbefd6; --ng:#c0392b; --ng-soft:#f9e1de;
+  --panel-a:#5b7fa6; --panel-b:#8a6fb0; --code-bg:#f3f0eb;
+  --radius:12px;
+  font-family: "Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161513; --surface:#1f1e1b; --ink:#ece8e1; --muted:#a39d93; --line:#34312c;
+    --accent:#e0875d; --accent-soft:#3a2a20;
+    --ok:#6cc08f; --ok-soft:#1d3226; --warn:#e3b04b; --warn-soft:#3a2f17; --ng:#ef7a6c; --ng-soft:#3c211d;
+    --panel-a:#86a8cf; --panel-b:#b39ad6; --code-bg:#262420;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161513; --surface:#1f1e1b; --ink:#ece8e1; --muted:#a39d93; --line:#34312c;
+  --accent:#e0875d; --accent-soft:#3a2a20;
+  --ok:#6cc08f; --ok-soft:#1d3226; --warn:#e3b04b; --warn-soft:#3a2f17; --ng:#ef7a6c; --ng-soft:#3c211d;
+  --panel-a:#86a8cf; --panel-b:#b39ad6; --code-bg:#262420;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.65;font-size:17px}
+a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+/* header */
+header.hero{padding:48px 0 24px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.badge{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.badge.sample{background:var(--warn-soft);border-color:transparent;color:var(--warn);font-weight:600}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.25;margin:0 0 16px}
+.summary .plain{font-size:19px;margin:0 0 8px}
+.summary .tech{color:var(--muted);font-size:15px;margin:0}
+
+/* controls + rail */
+.bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:16px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+.rail{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.rail a{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:13px;padding:5px 9px;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.rail a.on{color:var(--ink);background:var(--surface);border-color:var(--line);font-weight:600}
+.rail a.done{color:var(--ink)}
+.rail .lbl{display:none}
+.rail a.on .lbl{display:inline}
+.mode{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.mode button{border:0;background:none;color:var(--muted);font:inherit;font-size:13px;padding:6px 12px;cursor:pointer}
+.mode button[aria-pressed="true"]{background:var(--accent);color:#fff}
+
+/* scrolly */
+.scrolly{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;padding:24px 0 80px}
+.stage{position:sticky;top:72px;height:calc(100vh - 96px);display:flex;align-items:center}
+.stage .slot{position:relative;width:100%;height:100%;max-height:560px}
+.stage .fig{position:absolute;inset:0;opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .45s ease;pointer-events:none}
+.stage .fig.on{opacity:1;transform:none;pointer-events:auto}
+.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;justify-content:center;gap:12px;overflow:auto}
+.fig svg{width:100%;height:auto;max-height:420px}
+.fig figcaption{font-size:13px;color:var(--muted);text-align:center}
+.steps .step{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:24px 0}
+.js .steps .step .fig{display:none}
+.step .kicker{font-size:14px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.step h2{font-size:26px;line-height:1.3;margin:6px 0 14px}
+.step .plain{font-size:19px;margin:0 0 14px}
+.step details.tech{border-left:3px solid var(--line);padding:2px 0 2px 14px;color:var(--muted);font-size:15px}
+.step details.tech summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);list-style:none}
+.step details.tech summary::before{content:"▸ "}
+.step details.tech[open] summary::before{content:"▾ "}
+.step details.tech p{margin:6px 0 0}
+.evidence{margin-top:12px;font-size:12px;color:var(--muted)}
+.evidence code{background:var(--code-bg);padding:1px 6px;border-radius:6px}
+
+/* reading modes */
+body[data-mode="plain"] .step details.tech{display:none}
+body[data-mode="tech"] .step .plain{display:none}
+body[data-mode="tech"] .summary .plain{display:none}
+body[data-mode="plain"] .summary .tech{display:none}
+
+/* figure widgets */
+pre.code{margin:0;background:var(--code-bg);border-radius:10px;padding:14px 16px;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow:auto;color:var(--ink)}
+pre.code .c{color:var(--muted)}
+pre.code .hl{background:var(--accent-soft);display:inline-block;width:100%}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.cell{border-radius:10px;padding:14px 10px;text-align:center;border:1px solid transparent}
+.cell b{display:block;font-size:26px}
+.cell span{display:block;font-size:13px;margin-top:6px}
+.cell.ok{background:var(--ok-soft);color:var(--ok)}
+.cell.warn{background:var(--warn-soft);color:var(--warn)}
+.cell.ng{background:var(--ng-soft);color:var(--ng)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.flow span{background:var(--accent-soft);color:var(--ink);padding:4px 10px;border-radius:999px}
+.flow i{color:var(--muted);font-style:normal}
+table.mx{width:100%;border-collapse:collapse;font-size:15px}
+table.mx th,table.mx td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:center}
+table.mx th{color:var(--muted);font-weight:600;font-size:13px}
+table.mx td:first-child,table.mx th:first-child{text-align:left}
+.score{font-size:40px;font-weight:800;color:var(--ok);text-align:center;line-height:1}
+.score small{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-top:6px}
+
+/* svg palette */
+.pa{fill:color-mix(in srgb,var(--panel-a) 22%,transparent);stroke:var(--panel-a);stroke-width:2}
+.pb{fill:color-mix(in srgb,var(--panel-b) 22%,transparent);stroke:var(--panel-b);stroke-width:2}
+.gap{fill:var(--ng);opacity:.85}
+.ngs{stroke:var(--ng);fill:none;stroke-width:2}
+.oks{stroke:var(--ok);fill:none;stroke-width:3}
+.t{fill:var(--ink);font-size:13px;font-family:inherit}
+.tm{fill:var(--muted);font-size:12px;font-family:inherit}
+.tn{fill:var(--ng);font-size:13px;font-weight:700;font-family:inherit}
+.to{fill:var(--ok);font-size:13px;font-weight:700;font-family:inherit}
+
+footer{border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:13px}
+
+@media (max-width:860px){
+  body{font-size:16px}
+  .scrolly{display:block;padding-top:0}
+  .stage{top:56px;height:44vh;z-index:5;background:var(--bg);padding:8px 0}
+  .stage .slot{max-height:none}
+  .fig{padding:12px}
+  .fig svg{max-height:30vh}
+  .steps .step{min-height:70vh}
+  .step h2{font-size:22px}
+  .step .plain{font-size:17px}
+  .grid4{grid-template-columns:repeat(2,1fr);gap:6px}
+  .cell{padding:8px}
+  .cell b{font-size:18px}
+}
+@media print{
+  .bar,.stage{display:none!important}
+  .scrolly{display:block}
+  .js .steps .step .fig{display:flex}
+  .steps .step{min-height:0;break-inside:avoid;padding:16px 0;border-bottom:1px solid var(--line)}
+  .step details.tech{display:block!important}
+  .step details.tech > *{display:block}
+  body{background:#fff}
+}
+@media (prefers-reduced-motion:reduce){ .stage .fig{transition:none} }
+</style>
+</head>
+<body data-mode="both">
+
+<header class="hero wrap">
+  <div class="badges">
+    <span class="badge sample">샘플 — 형식 시연용 (실제 커밋 근거 없음)</span>
+    <span class="badge">R-001</span>
+    <span class="badge">Gate 7점 · S1 S2 S4 S5 S7</span>
+    <span class="badge">three.js · seam · pattern · grading</span>
+    <span class="badge">기준일 2026-09-30</span>
+  </div>
+  <h1>👗 패턴 두 장을 봉제하기</h1>
+  <div class="summary">
+    <p class="plain">앞판과 뒷판을 붙였더니 옆선이 벌어졌다. 끝점을 맞추는 대신 "어느 선끼리 붙는지"를 정해 두고 그 선을 기준으로 맞춰 붙여서 해결했다.</p>
+    <p class="tech">seam을 ID 기반 edge pair로 모델링하고, 공통 edge를 기준으로 panel transform을 계산해 사이즈와 무관하게 정합.</p>
+  </div>
+</header>
+
+<nav class="bar" aria-label="레시피 진행">
+  <div class="wrap">
+    <div class="rail" id="rail"></div>
+    <div class="mode" role="group" aria-label="읽기 모드">
+      <button type="button" data-mode="plain" aria-pressed="false">쉬운 설명</button>
+      <button type="button" data-mode="both" aria-pressed="true">둘 다</button>
+      <button type="button" data-mode="tech" aria-pressed="false">기술</button>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap scrolly">
+  <div class="stage" aria-hidden="true"><div class="slot" id="slot"></div></div>
+
+  <div class="steps">
+
+    <!-- s01 problem -->
+    <section class="step" id="s01" data-icon="👗" data-title="문제">
+      <div class="kicker">👗 01 · 문제</div>
+      <h2>봉제선이 벌어진다</h2>
+      <p class="plain">앞판과 뒷판을 3D로 붙였는데 옆선에서 옷이 벌어져 틈이 보인다.</p>
+      <details class="tech" open><summary>기술 설명</summary>
+        <p>Front/Back panel mesh 결합 후 side seam 구간에 vertex gap 발생. 렌더 시 틈으로 배경이 보임.</p></details>
+      <div class="evidence">근거: <code>샘플 — 실제 캡처 없음</code></div>
+      <figure class="fig">
+        <svg viewBox="0 0 400 300" role="img" aria-label="앞판과 뒷판 사이 옆선에 틈이 벌어진 모습">
+          <path class="pa" d="M70 40 L150 30 L196 48 L192 270 L66 270 Z"/>
+          <path class="pb" d="M204 48 L250 30 L330 40 L334 270 L214 270 Z"/>
+          <path class="gap" d="M196 48 L204 48 L214 270 L192 270 Z"/>
+          <text class="t" x="118" y="160" text-anchor="middle">앞판</text>
+          <text class="t" x="276" y="160" text-anchor="middle">뒷판</text>
+          <line x1="203" y1="200" x2="260" y2="200" stroke="var(--ng)" stroke-width="1.5"/>
+          <text class="tn" x="264" y="204">틈 발생</text>
+          <text class="tm" x="200" y="290" text-anchor="middle">옆선 (side seam)</text>
+        </svg>
+        <figcaption>옆선에서 두 패턴이 벌어짐</figcaption>
+      </figure>
+    </section>
+
+    <!-- s02 observe -->
+    <section class="step" id="s02" data-icon="🔍" data-title="관찰">
+      <div class="kicker">🔍 02 · 관찰</div>
+      <h2>끝점이 어긋나 있다</h2>
+      <p class="plain">가까이 보니 두 천의 끝이 4mm쯤 어긋나 있었다.</p>
+      <details class="tech" open><summary>기술 설명</summary>
+        <p>side seam 양 끝 endpoint 간 거리 최대 4.2mm (M 사이즈, 1:1 scale). 중간 구간 vertex 수도 서로 다름 (A 18개 / B 23개).</p></details>
+      <div class="evidence">근거: <code>샘플 — 실측값 아님</code></div>
+      <figure class="fig">
+        <svg viewBox="0 0 400 300" role="img" aria-label="두 패턴 끝점이 4.2mm 어긋난 확대 그림">
+          <circle cx="200" cy="130" r="110" fill="none" stroke="var(--line)" stroke-width="2"/>
+          <line x1="150" y1="40" x2="150" y2="230" stroke="var(--panel-a)" stroke-width="4"/>
+          <line x1="178" y1="62" x2="178" y2="236" stroke="var(--panel-b)" stroke-width="4"/>
+          <g fill="var(--panel-a)">
+            <circle cx="150" cy="60" r="3"/><circle cx="150" cy="90" r="3"/><circle cx="150" cy="120" r="3"/><circle cx="150" cy="150" r="3"/><circle cx="150" cy="180" r="3"/><circle cx="150" cy="210" r="3"/>
+          </g>
+          <g fill="var(--panel-b)">
+            <circle cx="178" cy="72" r="3"/><circle cx="178" cy="94" r="3"/><circle cx="178" cy="116" r="3"/><circle cx="178" cy="138" r="3"/><circle cx="178" cy="160" r="3"/><circle cx="178" cy="182" r="3"/><circle cx="178" cy="204" r="3"/><circle cx="178" cy="226" r="3"/>
+          </g>
+          <circle cx="150" cy="60" r="8" class="ngs"/><circle cx="178" cy="72" r="8" class="ngs"/>
+          <path d="M150 48 L178 48" stroke="var(--ng)" stroke-width="1.5"/>
+          <text class="tn" x="186" y="44">4.2mm 어긋남</text>
+          <text class="tm" x="140" y="258" text-anchor="end">앞판 핀 18개</text>
+          <text class="tm" x="190" y="258">뒷판 핀 23개</text>
+        </svg>
+        <figcaption>끝점 위치도, 핀 개수도 서로 다르다</figcaption>
+      </figure>
+    </section>
+
+    <!-- s03 attempt -->
+    <section class="step" id="s03" data-icon="🧪" data-title="시도">
+      <div class="kicker">🧪 03 · 시도 1</div>
+      <h2>끝점 억지로 붙이기</h2>
+      <p class="plain">가까운 끝점끼리 억지로 붙여 봤다.</p>
+      <details class="tech" open><summary>기술 설명</summary>
+        <p>seam 후보 endpoint 쌍을 거리 기준으로 찾고 tolerance 5mm 안이면 B의 좌표를 A로 snapping.</p></details>
+      <div class="evidence">근거: <code>샘플 — 실제 커밋 없음</code></div>
+      <figure class="fig">
+<pre class="code"><span class="c">// snapEndpoints: 가까운 끝점을 A 기준으로 붙인다</span>
+for (const b of panelB.endpoints) {
+  const a = nearest(panelA.endpoints, b);
+<span class="hl">  if (a &amp;&amp; distance(a, b) &lt; TOLERANCE_MM) {</span>
+<span class="hl">    b.copy(a);            <span class="c">// B의 끝점을 A 위치로 이동</span></span>
+  }
+}</pre>
+        <figcaption>거리 5mm 이내면 같은 점으로 간주</figcaption>
+      </figure>
+    </section>
+
+    <!-- s04 fail -->
+    <section class="step" id="s04" data-icon="❌" data-title="실패">
+      <div class="kicker">❌ 04 · 실패</div>
+      <h2>다른 사이즈에서 다시 벌어진다</h2>
+      <p class="plain">M 사이즈는 붙었지만 L, XL에서는 다시 벌어졌고, S에서는 엉뚱한 끝점끼리 붙었다.</p>
+      <details class="tech" open><summary>기술 설명</summary>
+        <p>그레이딩 편차로 endpoint 간 거리가 사이즈마다 달라 고정 tolerance가 맞지 않음. S는 거리가 가까운 다른 edge의 끝점과 잘못 매칭.</p></details>
+      <div class="evidence">근거: <code>샘플 — 테스트 결과 예시</code></div>
+      <figure class="fig">
+        <div class="grid4">
+          <div class="cell warn"><b>S</b>⚠️<span>엉뚱한 끝점끼리 붙음</span></div>
+          <div class="cell ok"><b>M</b>✅<span>정상</span></div>
+          <div class="cell ng"><b>L</b>❌<span>6.1mm 벌어짐</span></div>
+          <div class="cell ng"><b>XL</b>❌<span>8.4mm 벌어짐</span></div>
+        </div>
+        <figcaption>M에 맞춘 허용 오차가 다른 사이즈에서는 맞지 않는다</figcaption>
+      </figure>
+    </section>
+
+    <!-- s05 discovery -->
+    <section class="step" id="s05" data-icon="🧠" data-title="발견">
+      <div class="kicker">🧠 05 · 발견</div>
+      <h2>점이 아니라 "선의 짝" 문제</h2>
+      <p class="plain">점을 맞추는 문제가 아니었다. 봉제할 때처럼 "이 선과 저 선이 박음질된다"는 짝 정보가 없어서 생긴 문제였다.</p>
+      <details class="tech" open><summary>기술 설명</summary>
+        <p>원인은 좌표 오차가 아니라 seam relationship 모델 부재. 어떤 edge끼리 결합되는지 정의가 없어 거리 기반 추정에 의존했고, 그레이딩 시 추정이 깨짐.</p></details>
+      <div class="evidence">근거: <code>샘플</code></div>
+      <figure class="fig">
+        <svg viewBox="0 0 400 300" role="img" aria-label="앞판과 뒷판의 같은 이름 봉제선끼리 짝지어진 그림">
+          <rect x="40" y="70" width="110" height="170" rx="6" class="pa"/>
+          <rect x="250" y="70" width="110" height="170" rx="6" class="pb"/>
+          <text class="t" x="95" y="160" text-anchor="middle">앞판</text>
+          <text class="t" x="305" y="160" text-anchor="middle">뒷판</text>
+          <line x1="40" y1="70" x2="150" y2="70" stroke="var(--accent)" stroke-width="5"/>
+          <line x1="250" y1="70" x2="360" y2="70" stroke="var(--accent)" stroke-width="5"/>
+          <line x1="150" y1="70" x2="150" y2="240" stroke="var(--ok)" stroke-width="5"/>
+          <line x1="250" y1="70" x2="250" y2="240" stroke="var(--ok)" stroke-width="5"/>
+          <path d="M95 70 C95 20 305 20 305 70" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <path d="M150 155 L250 155" stroke="var(--ok)" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <text class="t" x="200" y="28" text-anchor="middle">어깨선 ↔ 어깨선</text>
+          <text class="to" x="200" y="148" text-anchor="middle">옆선 ↔ 옆선</text>
+          <text class="tm" x="200" y="280" text-anchor="middle">같은 이름표를 가진 선끼리 박음질</text>
+        </svg>
+        <figcaption>점의 거리 ✗ → 선의 짝 ✓</figcaption>
+      </figure>
+    </section>
+
+    <!-- s06 solution -->
+    <section class="step" id="s06" data-icon="🛠" data-title="해결">
+      <div class="kicker">🛠 06 · 해결</div>
+      <h2>봉제선에 이름표 붙이기</h2>
+      <p class="plain">봉제선마다 이름표를 붙이고, 같은 이름표끼리 선 전체를 기준으로 맞춰 붙였다.</p>
+      <details class="tech" open><summary>기술 설명</summary>
+        <p>DXF 로드 시 seam edge에 ID를 부여하고 SeamPair(A.edge, B.edge)로 저장. 결합 시 공통 edge의 시작·끝·방향으로 B panel의 transform을 계산하고, 두 edge를 arc-length 기준으로 같은 개수로 재샘플링.</p></details>
+      <div class="evidence">근거: <code>샘플 — 실제 커밋 없음</code></div>
+      <figure class="fig">
+        <div class="flow"><span>DXF 읽기</span><i>→</i><span>봉제선 이름표</span><i>→</i><span>짝 찾기</span><i>→</i><span>선 기준 맞추기</span><i>→</i><span>핀 개수 맞추기</span><i>→</i><span>박음질</span></div>
+<pre class="code"><span class="c">// seam pair 기준으로 B panel을 A에 정합</span>
+const pair = seams.get('side-seam-L');   <span class="c">// { a: Edge, b: Edge }</span>
+<span class="hl">const m = alignEdge(pair.b, pair.a);     <span class="c">// 시작·끝·방향을 a에 맞춤</span></span>
+panelB.applyMatrix4(m);
+const n = Math.max(pair.a.count, pair.b.count);
+<span class="hl">stitch(resample(pair.a, n), resample(pair.b, n));</span></pre>
+        <figcaption>거리로 추정하지 않고, 정해 둔 짝을 따른다</figcaption>
+      </figure>
+    </section>
+
+    <!-- s07 edge -->
+    <section class="step" id="s07" data-icon="⚠️" data-title="Edge Case">
+      <div class="kicker">⚠️ 07 · Edge Case</div>
+      <h2>곡선·길이가 다른 봉제선</h2>
+      <p class="plain">길이가 다른 곡선 봉제선(예 — 소매산)은 아직 그대로 붙지 않는다. 오그려 박는 여유분 처리가 따로 필요하다.</p>
+      <details class="tech" open><summary>기술 설명</summary>
+        <p>두 seam edge의 arc-length 차이가 있으면(ease) 균등 재샘플링만으로는 한쪽이 늘어나거나 주름 위치가 틀어짐. ease 분배 규칙은 R-004에서 다룸.</p></details>
+      <div class="evidence">근거: <code>샘플</code></div>
+      <figure class="fig">
+        <table class="mx">
+          <thead><tr><th>봉제선 형태</th><th>길이 같음</th><th>길이 다름 (여유분)</th></tr></thead>
+          <tbody>
+            <tr><td>직선</td><td>✅ 해결</td><td>⚠️ 늘어남 발생</td></tr>
+            <tr><td>곡선</td><td>✅ 해결</td><td>❌ 미해결 → R-004</td></tr>
+          </tbody>
+        </table>
+        <figcaption>이 레시피가 아직 다루지 못하는 범위</figcaption>
+      </figure>
+    </section>
+
+    <!-- s08 verify -->
+    <section class="step" id="s08" data-icon="✅" data-title="검증">
+      <div class="kicker">✅ 08 · 검증</div>
+      <h2>3종 × 4사이즈 검증</h2>
+      <p class="plain">패턴 3종을 사이즈 4개로 붙여 봤고, 12개 모두 벌어지지 않았다.</p>
+      <details class="tech" open><summary>기술 설명</summary>
+        <p>티셔츠·셔츠·원피스 × S/M/L/XL = 12 case에서 seam gap 0.1mm 이하 확인.</p></details>
+      <div class="evidence">근거: <code>샘플 — 테스트 결과 예시</code></div>
+      <figure class="fig">
+        <div class="score">12 / 12<small>seam gap 0.1mm 이하</small></div>
+        <table class="mx">
+          <thead><tr><th>패턴</th><th>S</th><th>M</th><th>L</th><th>XL</th></tr></thead>
+          <tbody>
+            <tr><td>티셔츠</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>셔츠</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>원피스</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          </tbody>
+        </table>
+      </figure>
+    </section>
+
+  </div>
+</main>
+
+<footer class="wrap">
+  cobro-recipe · R-001 · 관련 레시피: R-004 곡선 봉제선 처리하기 (예정) · 사후 재구성(reconstructed) · 사내 전용
+</footer>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var slot = document.getElementById('slot');
+  var rail = document.getElementById('rail');
+  var figs = [], links = [];
+
+  steps.forEach(function(step, i){
+    var f = step.querySelector('.fig');
+    var clone = f.cloneNode(true);
+    slot.appendChild(clone); figs.push(clone);
+    var a = document.createElement('a');
+    a.href = '#' + step.id;
+    a.innerHTML = step.dataset.icon + '<span class="lbl">' + step.dataset.title + '</span>';
+    a.setAttribute('aria-label', step.dataset.title);
+    rail.appendChild(a); links.push(a);
+  });
+
+  function activate(i){
+    figs.forEach(function(f, j){ f.classList.toggle('on', j === i); });
+    links.forEach(function(a, j){
+      a.classList.toggle('on', j === i);
+      a.classList.toggle('done', j < i);
+    });
+    var on = links[i];
+    if (on && on.scrollIntoView && rail.scrollWidth > rail.clientWidth) {
+      rail.scrollLeft = on.offsetLeft - rail.clientWidth / 2 + on.clientWidth / 2;
+    }
+  }
+  activate(0);
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) activate(steps.indexOf(e.target));
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    steps.forEach(function(s){ io.observe(s); });
+  }
+
+  var KEY = 'cobro-recipe:mode';
+  var buttons = document.querySelectorAll('.mode button');
+  function setMode(m){
+    document.body.dataset.mode = m;
+    buttons.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.mode === m)); });
+    try { localStorage.setItem(KEY, m); } catch (e) {}
+  }
+  buttons.forEach(function(b){ b.addEventListener('click', function(){ setMode(b.dataset.mode); }); });
+  try { var saved = localStorage.getItem(KEY); if (saved) setMode(saved); } catch (e) {}
+})();
+</script>
+</body>
+</html>
