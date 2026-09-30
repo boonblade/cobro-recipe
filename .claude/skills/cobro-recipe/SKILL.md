@@ -1,6 +1,8 @@
 ---
 name: cobro-recipe
 license: MIT (LICENSE)
+metadata:
+  version: "0.1.0"
 description: "Record a hard-won fix as a recipe (problem, attempts, failures, discovery, solution) in recipe.yaml plus a hand-drawn animated HTML, with plain-language and technical explanations backed by commit and test evidence, and search past recipes. Use when the user runs /cobro-recipe or says \"save this as a recipe\", \"write this up as a recipe\", \"have we seen this before\", \"레시피로 남겨\", \"레시피화\", \"이 문제 정리해서 남겨\", \"전에 이런 문제 있었나\". Right after solving a tricky bug or design problem through several attempts, compute the Gate score and only suggest a recipe; never write one unasked. General-purpose for any domain, Korean or English; depends on no other skill or external library. / 개발 중 다시 만날 문제의 해결 과정을 쉬운 설명·기술 설명·근거가 붙은 손그림 레시피로 남기고 검색한다."
 ---
 
@@ -31,6 +33,7 @@ description: "Record a hard-won fix as a recipe (problem, attempts, failures, di
 | (자동 제안) | 해결 직후 Gate 계산 → 4점 이상이면 제안 메시지 1회. `init`이 넣은 CLAUDE.md 블록이 이를 상기시킨다 | `references/gate-criteria.md` |
 | `write [커밋 범위]` | 레시피 작성 → 검사 → 렌더 → 인덱스 | 아래 "write 절차" |
 | `render <recipe.yaml>` | `render.py` 실행 | – |
+| `upgrade` | 스킬 업데이트 뒤: `render.py --all recipes --check`로 옛 엔진 HTML 확인 → 있으면 `render.py --all recipes` (YAML은 그대로, HTML만 새 엔진으로) | – |
 | `index` | `build_index.py recipes` | – |
 | `translate <R-###> <ko\|en>` | 요청이 있을 때만: 원본 옆에 `recipe.<lang>.yaml` 작성 → 검사 → 렌더 → 인덱스 | 아래 "번역" |
 | `search <증상>` | `search.py "<증상>"` → 결과 요약. 맞는 레시피가 있으면 해당 `recipe.yaml`만 연다 | – |

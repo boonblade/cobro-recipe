@@ -19,6 +19,13 @@ def skill_dir() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
+def version() -> str:
+    """스킬 버전 — SKILL.md 머리말 metadata.version 하나만 고치면 된다 (렌더 결과에 엔진 버전으로 기록)"""
+    head = (skill_dir() / "SKILL.md").read_text(encoding="utf-8").split("\n---", 1)[0]
+    m = re.search(r'^\s+version:\s*"?([0-9][0-9A-Za-z.\-+]*)"?\s*$', head, re.M)
+    return m.group(1) if m else "0.0.0"
+
+
 def variant_lang(path: str | Path) -> str | None:
     """recipe.en.yaml → 'en', recipe.yaml → None(원본)"""
     m = re.fullmatch(r"recipe\.([a-z]{2})\.yaml", Path(path).name)
