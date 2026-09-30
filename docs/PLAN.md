@@ -1,8 +1,8 @@
-# engineering-recipe Skill 기획서
+# cobro-recipe Skill 기획서
 
 | 항목 | 내용 |
 |---|---|
-| 문서 | engineering-recipe Skill 기획서 v0.1 (초안) |
+| 문서 | cobro-recipe Skill 기획서 v0.2 (초안) — Skill 이름 확정 |
 | 작성일 | 2026-09-30 |
 | 작성 | IT팀 |
 | 상태 | **검토 요청** (§9 의사결정 항목 컨펌 필요) |
@@ -11,11 +11,11 @@
 
 ## 0. 결론 (Executive Summary)
 
-**개발 중 "다시 만날 문제"만 골라, 문제→시도→실패→발견→해결 과정을 비개발자도 읽을 수 있는 스크롤형 레시피(HTML)로 자동 생성하는 Claude Skill `engineering-recipe`를 구축한다.**
+**개발 중 "다시 만날 문제"만 골라, 문제→시도→실패→발견→해결 과정을 비개발자도 읽을 수 있는 스크롤형 레시피(HTML)로 자동 생성하는 Claude Skill `cobro-recipe`를 구축한다.**
 
 1. 대상은 모든 작업이 아니라 **Gate 기준(§4.2)을 통과한 문제만** — 과잉 문서화 방지.
 2. 하나의 설명을 **2층 구조(쉬운 비유 + 기술 설명)**로 작성 — 패턴실·MD 등 비개발자와 개발자가 같은 문서를 공유.
-3. `diagram-design`은 "그림 그리는 Skill", `engineering-recipe`는 "무엇을 언제 보여줄지 정하는 연출 Skill" — 역할 분리로 충돌 없음.
+3. `diagram-design`은 "그림 그리는 Skill", `cobro-recipe`는 "무엇을 언제 보여줄지 정하는 연출 Skill" — 역할 분리로 충돌 없음.
 4. 모든 서술은 **커밋·파일 근거(evidence) 필수** — AI가 시도 이력을 지어내는 것 차단.
 5. 누적 결과물은 **Garment 3D Engineering Recipe Book** = 사내 3D 패턴 기술 노하우 DB.
 
@@ -48,7 +48,7 @@
 ## 3. 범위
 
 **In Scope**
-- Skill 본체 (`.claude/skills/engineering-recipe/`)
+- Skill 본체 (`.claude/skills/cobro-recipe/`)
 - 레시피 데이터 스키마(`recipe.yaml`), Gate 기준, 쉬운 설명 가이드, 도메인 용어 사전
 - 스크롤형 HTML 렌더러 (단일 파일, 오프라인 열람 가능)
 - 레시피 목록(INDEX) 자동 갱신
@@ -201,7 +201,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 
 ### 4.7 diagram-design 연동
 
-| 구분 | engineering-recipe (연출) | diagram-design (작화) |
+| 구분 | cobro-recipe (연출) | diagram-design (작화) |
 |---|---|---|
 | 책임 | 어떤 scene에 어떤 그림이 필요한지 결정 | 그림 자체 생성 |
 | 인터페이스 | `visual: { kind: diagram, type: flowchart, spec: ... }` | spec 받아 SVG 반환 |
@@ -214,17 +214,17 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 | 명령 | 시점 | 동작 |
 |---|---|---|
 | (자동 제안) | 여러 시도 끝에 문제 해결 직후 | Gate 점수 계산 → "레시피로 남길까요? (7점)" 제안만 |
-| `/engineering-recipe capture` | 개발 진행 중 | 현재 시도/실패/발견을 inbox에 기록 |
-| `/engineering-recipe write [commit-range]` | 해결 후 | inbox + git 이력으로 `recipe.yaml` 초안 작성 |
-| `/engineering-recipe render <id>` | 검토 후 | HTML 생성 |
-| `/engineering-recipe index` | 수시 | Recipe Book 목록 갱신 |
+| `/cobro-recipe capture` | 개발 진행 중 | 현재 시도/실패/발견을 inbox에 기록 |
+| `/cobro-recipe write [commit-range]` | 해결 후 | inbox + git 이력으로 `recipe.yaml` 초안 작성 |
+| `/cobro-recipe render <id>` | 검토 후 | HTML 생성 |
+| `/cobro-recipe index` | 수시 | Recipe Book 목록 갱신 |
 
 ---
 
 ## 5. 산출물 구조
 
 ```
-.claude/skills/engineering-recipe/          # Skill 본체
+.claude/skills/cobro-recipe/                # Skill 본체
 ├── SKILL.md                                # 트리거·워크플로우·원칙
 ├── references/
 │   ├── gate-criteria.md                    # §4.2
@@ -290,8 +290,8 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 
 | # | 항목 | 옵션 | 권고안 |
 |---|---|---|---|
-| D1 | Skill 이름 | ① `engineering-recipe` ② `dev-recipe` ③ `recipe-visualizer` | **①** — diagram-design과 나란히 놓았을 때 역할이 가장 명확 |
-| D2 | 레시피 저장 위치 | ① 각 개발 프로젝트 repo 내 `recipes/` ② 본 repo(`cobro-recipe`)에 중앙 집중 | **① + 인덱스만 중앙** — 코드와 evidence 링크가 같은 repo에 있어야 추적 가능 |
+| D1 | Skill 이름 | `cobro-recipe` | **확정** (2026-09-30) |
+| D2 | 레시피 저장 위치 | ① 각 개발 프로젝트 repo 내 `recipes/` ② Skill repo(`cobro-recipe`)에 중앙 집중 | **① + 인덱스만 중앙** — 코드와 evidence 링크가 같은 repo에 있어야 추적 가능 |
 | D3 | 렌더링 방식 | ① 템플릿 + 스크립트(결정적) ② AI가 매번 HTML 자유 생성 ③ 혼합 | **③** — 레이아웃·스타일은 템플릿 고정, scene 내 커스텀 시각화만 AI 생성 (일관성 + 토큰 절감) |
 | D4 | 캡처 방식 | ① 수동 명령만 ② 자동 제안 ③ Hook으로 세션 종료 시 강제 점검 | **② (P2)** → 정착 후 ③ 검토 |
 | D5 | `_inbox` git 관리 | ① commit ② `.gitignore` | **②** — 원재료는 로컬, 정제된 `recipe.yaml`만 commit |
