@@ -10,6 +10,8 @@ business_readers: 패턴실, MD
 reviewer: 패턴실 1인
 domain_knowledge_examples: [그레이딩, 시접, 여유분(ease), 원단 결 방향, 봉제 순서]
 
+lang: ko
+
 sketch:
   protagonist: needle        # 바늘 — 지나간 길이 실 땀(점선)으로 남는다
   trail: stitch
