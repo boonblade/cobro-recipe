@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R-001 여러 탭에서 쓴 초안 지키기</title>
+<!-- cobro-recipe clean 템플릿 — scripts/render.py가 채운다. 외부 리소스 없음. -->
+<style>
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1f1d1a; --muted:#6b665e; --line:#e4dfd7;
+  --accent:#b4532a; --accent-soft:#f6e6dc;
+  --ok:#2f7d4f; --ok-soft:#e3f1e8; --warn:#a86a00; --warn-soft:#fbefd6; --ng:#c0392b; --ng-soft:#f9e1de;
+  --a:#5b7fa6; --b:#8a6fb0; --code-bg:#f3f0eb; --radius:12px;
+  font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161513; --surface:#1f1e1b; --ink:#ece8e1; --muted:#a39d93; --line:#34312c;
+    --accent:#e0875d; --accent-soft:#3a2a20;
+    --ok:#6cc08f; --ok-soft:#1d3226; --warn:#e3b04b; --warn-soft:#3a2f17; --ng:#ef7a6c; --ng-soft:#3c211d;
+    --a:#86a8cf; --b:#b39ad6; --code-bg:#262420;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161513; --surface:#1f1e1b; --ink:#ece8e1; --muted:#a39d93; --line:#34312c;
+  --accent:#e0875d; --accent-soft:#3a2a20;
+  --ok:#6cc08f; --ok-soft:#1d3226; --warn:#e3b04b; --warn-soft:#3a2f17; --ng:#ef7a6c; --ng-soft:#3c211d;
+  --a:#86a8cf; --b:#b39ad6; --code-bg:#262420;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.65;font-size:17px}
+a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header.hero{padding:48px 0 24px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.badge{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.badge.hl{background:var(--warn-soft);border-color:transparent;color:var(--warn);font-weight:600}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.25;margin:0 0 16px}
+.summary .plain{font-size:19px;margin:0 0 8px}
+.summary .tech{color:var(--muted);font-size:15px;margin:0}
+.bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:16px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+.rail{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.rail a{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:13px;padding:5px 9px;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.rail a.on{color:var(--ink);background:var(--surface);border-color:var(--line);font-weight:600}
+.rail .lbl{display:none}
+.rail a.on .lbl{display:inline}
+.mode{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.mode button{border:0;background:none;color:var(--muted);font:inherit;font-size:13px;padding:6px 12px;cursor:pointer}
+.mode button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.scrolly{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;padding:24px 0 80px}
+.stage{position:sticky;top:72px;height:calc(100vh - 96px);display:flex;align-items:center}
+.stage .slot{position:relative;width:100%;height:100%;max-height:560px}
+.stage .fig{position:absolute;inset:0;opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .45s ease;pointer-events:none}
+.stage .fig.on{opacity:1;transform:none;pointer-events:auto}
+.fig{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;justify-content:center;gap:12px;overflow:auto}
+.fig svg{width:100%;height:auto;max-height:420px}
+.fig img{max-width:100%;max-height:420px;object-fit:contain;align-self:center}
+.fig figcaption{font-size:13px;color:var(--muted);text-align:center}
+.steps .step{min-height:78vh;display:flex;flex-direction:column;justify-content:center;padding:24px 0}
+.js .steps .step .fig{display:none}
+.step .kicker{font-size:14px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.step h2{font-size:26px;line-height:1.3;margin:6px 0 14px}
+.step .plain{font-size:19px;margin:0 0 14px;white-space:pre-line}
+.step details.tech{border-left:3px solid var(--line);padding:2px 0 2px 14px;color:var(--muted);font-size:15px}
+.step details.tech summary{cursor:pointer;font-size:13px;font-weight:600;list-style:none}
+.step details.tech summary::before{content:"▸ "}
+.step details.tech[open] summary::before{content:"▾ "}
+.step details.tech p{margin:6px 0 0;white-space:pre-line}
+.evidence{margin-top:12px;font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.evidence code,.evidence a{background:var(--code-bg);padding:1px 6px;border-radius:6px;font-family:ui-monospace,Menlo,monospace;text-decoration:none}
+body[data-mode="plain"] .step details.tech{display:none}
+body[data-mode="tech"] .step .plain{display:none}
+body[data-mode="tech"] .summary .plain{display:none}
+body[data-mode="plain"] .summary .tech{display:none}
+/* 내장 그림 부품 */
+.cap{font-size:12px;font-weight:600;color:var(--muted)}
+pre.code{margin:0;background:var(--code-bg);border-radius:10px;padding:14px 16px;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow:auto;color:var(--ink)}
+pre.code .add{background:var(--ok-soft);display:inline-block;width:100%}
+pre.code .del{background:var(--ng-soft);display:inline-block;width:100%;text-decoration:line-through;opacity:.75}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.cell{border-radius:10px;padding:14px 10px;text-align:center}
+.cell b{display:block;font-size:22px}
+.cell span{display:block;font-size:13px;margin-top:6px}
+.cell.ok{background:var(--ok-soft);color:var(--ok)}
+.cell.warn{background:var(--warn-soft);color:var(--warn)}
+.cell.ng{background:var(--ng-soft);color:var(--ng)}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.flow span{background:var(--accent-soft);padding:8px 14px;border-radius:10px;font-size:15px}
+.flow span.hl{background:var(--accent);color:#fff}
+.flow i{color:var(--muted);font-style:normal}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ba > div{border-radius:10px;padding:14px;font-size:15px}
+.ba .before{background:var(--ng-soft)} .ba .after{background:var(--ok-soft)}
+.ba ul{margin:6px 0 0;padding-left:18px}
+table.mx{width:100%;border-collapse:collapse;font-size:15px}
+table.mx th,table.mx td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:center}
+table.mx th{color:var(--muted);font-weight:600;font-size:13px}
+table.mx td:first-child,table.mx th:first-child{text-align:left}
+.ph{border:2px dashed var(--line);border-radius:10px;padding:40px 16px;text-align:center;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:13px}
+@media (max-width:860px){
+  body{font-size:16px}
+  .scrolly{display:block;padding-top:0}
+  .stage{top:56px;height:44vh;z-index:5;background:var(--bg);padding:8px 0}
+  .stage .slot{max-height:none}
+  .fig{padding:12px}
+  .fig svg{max-height:30vh}
+  .steps .step{min-height:70vh}
+  .step h2{font-size:22px}
+  .step .plain{font-size:17px}
+  .ba{grid-template-columns:1fr}
+}
+@media print{
+  .bar,.stage{display:none!important}
+  .scrolly{display:block}
+  .js .steps .step .fig{display:flex}
+  .steps .step{min-height:0;break-inside:avoid;padding:16px 0;border-bottom:1px solid var(--line)}
+  .step details.tech{display:block!important}
+  body{background:#fff}
+}
+@media (prefers-reduced-motion:reduce){ .stage .fig{transition:none} }
+</style>
+</head>
+<body data-mode="both">
+<header class="hero wrap">
+  <div class="badges"><span class="badge hl">검토 중</span><span class="badge">사후 재구성</span><span class="badge">R-001</span><span class="badge">Gate 6점 · S1 S2 S4 S7</span><span class="badge">overlay · core · multi-tab · draft · state</span><span class="badge">기준 2026-09-24 · 5cc9d99</span></div>
+  <h1>여러 탭에서 쓴 초안 지키기</h1>
+  <div class="summary">
+    <p class="plain">한 탭에서 써 둔 메모가 다른 탭에서 메모를 고치면 사라졌다. 탭마다 자기 페이지 메모만 바꾸게 하고, 메모의 페이지 이름표도 보낸 탭이 직접 달게 해서 해결했다.</p>
+    <p class="tech">draft 메시지 처리를 전체 교체에서 페이지 단위 교체로 바꾸고(R177), 새 초안의 page를 전역 s.page가 아니라 메시지를 보낸 탭의 page로 찍으며 교체 대상 id는 유지 목록에서 제외했다(Task 69 B1).</p>
+  </div>
+</header>
+<nav class="bar" aria-label="레시피 진행">
+  <div class="wrap">
+    <div class="rail" id="rail"></div>
+    <div class="mode" role="group" aria-label="읽기 모드">
+      <button type="button" data-mode="plain" aria-pressed="false">쉬운 설명</button>
+      <button type="button" data-mode="both" aria-pressed="true">둘 다</button>
+      <button type="button" data-mode="tech" aria-pressed="false">기술</button>
+    </div>
+  </div>
+</nav>
+<main class="wrap scrolly">
+  <div class="stage" aria-hidden="true"><div class="slot" id="slot"></div></div>
+  <div class="steps">
+    <section class="step" id="s01" data-icon="🚩" data-title="문제">
+      <div class="kicker">🚩 01 · 문제</div>
+      <h2>다른 탭에서 쓰면 앞 탭 메모가 사라진다</h2>
+      <p class="plain">탭 두 개에서 각각 메모를 쓰는데, 둘째 탭에서 메모를 고치자 첫째 탭에 써 둔 메모가 사라졌다.</p>
+      <details class="tech" open><summary>기술 설명</summary><p>같은 세션에 연결된 두 오버레이(탭)가 각자 draft 메시지를 보낼 때, 한 탭의 메시지가 다른 탭이 만든 서버 초안을 지운다.</p></details>
+      <div class="evidence">근거: <a href="https://github.com/boonblade/cobro-mcp/commit/fd91128">fd91128</a> <a href="https://github.com/boonblade/cobro-mcp/blob/fd91128/CHANGELOG.md">CHANGELOG.md</a> <code>메모: Drafts made in one tab are no longer wiped when you edit a draft in another tab</code></div>
+      <figure class="fig"><div class="grid"><div class="cell ok"><b>① 탭 A 메모</b>✅<span>저장됨</span></div><div class="cell ok"><b>② 탭 B 메모</b>✅<span>저장됨</span></div><div class="cell ng"><b>③ 탭 A 메모 다시 보기</b>❌<span>사라짐</span></div></div><figcaption>같은 세션, 서로 다른 페이지의 두 탭</figcaption></figure>
+    </section>
+    <section class="step" id="s02" data-icon="🔍" data-title="관찰">
+      <div class="kicker">🔍 02 · 관찰</div>
+      <h2>초안 메시지가 &quot;전부 바꾸기&quot;였다</h2>
+      <p class="plain">각 탭은 &quot;내가 가진 메모 전부&quot;를 보내고, 받는 쪽은 그것으로 메모함 전체를 갈아 끼우고 있었다. 둘째 탭은 첫째 탭 메모를 모르니 그 메모 없이 덮어쓴 셈이다.</p>
+      <details class="tech" open><summary>기술 설명</summary><p>OverlayMsg &#x27;draft&#x27;의 계약이 &quot;status draft인 것 전체 교체&quot;였고, SessionCore.setDrafts(batches)는 draft가 아닌 배치만 남기고 초안을 통째로 교체했다.</p></details>
+      <div class="evidence">근거: <a href="https://github.com/boonblade/cobro-mcp/commit/dd6596f">dd6596f</a> <a href="https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/session.ts">src/core/session.ts</a> <code>메모: 수정 전 코드는 dd6596f의 부모 34-35행</code> <a href="https://github.com/boonblade/cobro-mcp/commit/dd6596f">dd6596f</a> <a href="https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/types.ts">src/core/types.ts</a></div>
+      <figure class="fig"><pre class="code">setDrafts(batches: Batch[]): void {
+  const others = this.s.batches.filter((b) =&gt; b.status !== &#x27;draft&#x27;);
+  ...</pre><figcaption>수정 전 setDrafts — 초안은 전부 버리고 받은 것으로 교체</figcaption></figure>
+    </section>
+    <section class="step" id="s03" data-icon="🧪" data-title="시도">
+      <div class="kicker">🧪 03 · 시도</div>
+      <h2>시도 1: 페이지 단위로 바꾸기</h2>
+      <p class="plain">메모함을 통째로 바꾸지 않고, 보낸 탭의 페이지 메모만 바꾸게 했다. 탭 쪽도 자기 페이지 메모만 보내고, 받은 목록에 다른 탭 메모를 합쳐 보관하게 했다.</p>
+      <details class="tech" open><summary>기술 설명</summary><p>draft 메시지에 page(location.href)를 추가하고 setDrafts(batches, pageUrl)가 samePage인 초안만 교체하게 했다. 오버레이 flushDraft는 현재 페이지 초안만 보내고, state 수신 시 서버 순서대로 병합한다.</p></details>
+      <div class="evidence">근거: <a href="https://github.com/boonblade/cobro-mcp/commit/dd6596f">dd6596f</a> <a href="https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/session.ts">src/core/session.ts</a> <a href="https://github.com/boonblade/cobro-mcp/commit/fd91128">fd91128</a> <a href="https://github.com/boonblade/cobro-mcp/blob/fd91128/src/overlay/index.ts">src/overlay/index.ts</a> <code>test: test/core/session.test.ts › setDrafts replaces drafts per page when a pageUrl is given (R177)</code></div>
+      <figure class="fig"><pre class="code"><span class="del">const others = this.s.batches.filter((b) =&gt; b.status !== &#x27;draft&#x27;);</span>
+<span class="add">const others = this.s.batches.filter((b) =&gt; {</span>
+<span class="add">  if (b.status !== &#x27;draft&#x27;) return true;</span>
+<span class="add">  if (!pageUrl) return false;</span>
+<span class="add">  return !!b.page &amp;&amp; !samePage(b.page.url, pageUrl);</span>
+<span class="add">});</span></pre><figcaption>같은 페이지 초안만 교체 대상</figcaption></figure>
+    </section>
+    <section class="step" id="s04" data-icon="❌" data-title="실패">
+      <div class="kicker">❌ 04 · 실패</div>
+      <h2>여는 순서를 바꾸면 이름표가 틀리고 메모가 둘로 는다</h2>
+      <p class="plain">리뷰에서 막혔다. 첫째 탭을 열어 두고 둘째 탭을 연 뒤 첫째 탭에서 새 메모를 쓰면, 그 메모에 둘째 탭 페이지 이름표가 붙었고 다음 저장 때 같은 메모가 두 개로 늘어났다.</p>
+      <details class="tech" open><summary>기술 설명</summary><p>새 초안의 page를 서버 전역 s.page(마지막에 연결한 탭)로 찍어 라벨이 어긋났다. 같은 id를 다시 보내면 samePage 불일치로 others에 남는 동시에 kept에도 들어가 중복 증식했다(리뷰 Task 69 B1).</p></details>
+      <div class="evidence">근거: <a href="https://github.com/boonblade/cobro-mcp/commit/9af6e18">9af6e18</a> <code>메모: 커밋 메시지: Task 69 B1 — 초안 page를 보낸 탭의 페이지로 찍고 교체 대상 id를 유지 목록에서 제외</code> <a href="https://github.com/boonblade/cobro-mcp/commit/9af6e18">9af6e18</a> <a href="https://github.com/boonblade/cobro-mcp/blob/9af6e18/test/e2e/overlay.spec.ts#L1281">test/e2e/overlay.spec.ts:1281</a> <code>메모: B1 재현 순서(순차 탭 전환)로 e2e 수정</code></div>
+      <figure class="fig"><div class="grid"><div class="cell ok"><b>A 메모 → B 열기</b>✅<span>시도 1로 해결</span></div><div class="cell ng"><b>A 열기 → B 열기 → A 새 메모</b>❌<span>이름표 B · 메모 2개</span></div></div><figcaption>시도 1은 탭 연결 순서에 따라 결과가 갈린다</figcaption></figure>
+    </section>
+    <section class="step" id="s05" data-icon="🧠" data-title="발견">
+      <div class="kicker">🧠 05 · 발견</div>
+      <h2>칠판이 하나뿐이었다</h2>
+      <p class="plain">메모를 얼마나 바꾸느냐가 아니라 &quot;이 메모가 어느 탭에서 왔나&quot;를 모르는 게 문제였다. 서버는 회의실 칠판 하나에 마지막으로 들어온 탭 이름만 적어 두고, 모든 새 메모에 그 이름표를 붙이고 있었다.</p>
+      <details class="tech" open><summary>기술 설명</summary><p>원인은 교체 범위가 아니라 발신 맥락의 부재였다. setDrafts가 새 초안의 page를 전역 s.page에서 가져와 멀티탭에서 연결 순서에 따라 라벨이 달라졌고, 라벨이 어긋나면 교체 대상 판정(samePage)도 함께 어긋났다.</p></details>
+      <div class="evidence">근거: <a href="https://github.com/boonblade/cobro-mcp/commit/9af6e18">9af6e18</a> <a href="https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/session.ts#L57">src/core/session.ts:57</a></div>
+      <figure class="fig"><div class="ba"><div class="before"><div class="cap">전역 칠판(s.page)이 이름표를 단다</div><ul><li>탭 A 연결 → 칠판: A</li><li>탭 B 연결 → 칠판: B</li><li>탭 A 새 메모 → 이름표 B ✗</li></ul></div><div class="after"><div class="cap">보낸 탭이 이름표를 단다</div><ul><li>탭 A 새 메모 + &#x27;나는 A 페이지&#x27;</li><li>서버: 이름표 A ✓</li><li>이번에 받은 id는 항상 교체 대상</li></ul></div></div><figcaption>이름표를 누가 다는가</figcaption></figure>
+    </section>
+    <section class="step" id="s06" data-icon="🛠" data-title="해결">
+      <div class="kicker">🛠 06 · 해결</div>
+      <h2>보낸 탭이 이름표를 단다</h2>
+      <p class="plain">메모를 보낼 때 탭이 자기 페이지 이름표를 함께 보내고, 서버는 새 메모에 그 이름표를 그대로 단다. 이번에 받은 메모는 이름표와 상관없이 항상 새것으로 바꿔 중복을 막았다.</p>
+      <details class="tech" open><summary>기술 설명</summary><p>draft 메시지의 page를 {url, title} 객체로 바꾸고, setDrafts(batches, page)가 처음 보는 초안을 메시지 page로 stamp한다. keptIds에 든 id는 others에서 무조건 제외한다. bridge는 page.url이 문자열일 때만 넘긴다(하위 호환).</p></details>
+      <div class="evidence">근거: <a href="https://github.com/boonblade/cobro-mcp/commit/9af6e18">9af6e18</a> <a href="https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/session.ts#L36-L58">src/core/session.ts:36-58</a> <a href="https://github.com/boonblade/cobro-mcp/commit/9af6e18">9af6e18</a> <a href="https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/bridge.ts#L37-L38">src/bridge.ts:37-38</a> <a href="https://github.com/boonblade/cobro-mcp/commit/9af6e18">9af6e18</a> <a href="https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/types.ts#L52">src/core/types.ts:52</a></div>
+      <figure class="fig"><pre class="code">const keptIds = new Set(kept.map((b) =&gt; b.id));
+const others = this.s.batches.filter((b) =&gt; {
+  if (keptIds.has(b.id)) return false; // 교체 대상 id는 무조건 제외
+  if (b.status !== &#x27;draft&#x27;) return true;
+  if (!page) return false;
+  return !!b.page &amp;&amp; !samePage(b.page.url, page.url);
+});
+// 처음 보는 초안은 메시지의 page(보낸 탭)로 찍는다
+const stamped = prev ? prev.page : (page ?? (this.s.page ? { ... } : undefined));</pre><figcaption>src/core/session.ts @ 9af6e18</figcaption></figure>
+    </section>
+    <section class="step" id="s07" data-icon="⚠️" data-title="Edge Case">
+      <div class="kicker">⚠️ 07 · Edge Case</div>
+      <h2>옛 버전 탭과 주소 비교 규칙</h2>
+      <p class="plain">옛 버전 탭이 페이지 정보 없이 보내면 예전처럼 전체를 바꾼다. 주소에서</p>
+      <details class="tech" open><summary>기술 설명</summary><p>page 없는 draft 메시지는 전체 교체(하위 호환), page 없는 옛 초안은 같은 페이지로 간주한다. samePage는 origin+pathname+search만 비교하고 hash는 무시한다(R163).</p></details>
+      <div class="evidence">근거: <a href="https://github.com/boonblade/cobro-mcp/commit/d898af4">d898af4</a> <a href="https://github.com/boonblade/cobro-mcp/blob/d898af4/src/core/page.ts#L1-L7">src/core/page.ts:1-7</a> <a href="https://github.com/boonblade/cobro-mcp/commit/9af6e18">9af6e18</a> <a href="https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/bridge.ts#L37">src/bridge.ts:37</a></div>
+      <figure class="fig"><table class="mx"><thead><tr><th>상황</th><th>동작</th></tr></thead><tbody><tr><td>페이지 정보 없는 메시지 (옛 오버레이)</td><td>전체 교체 — 기존 동작 유지</td></tr><tr><td>페이지 정보 없는 옛 초안</td><td>받는 탭의 페이지로 간주</td></tr><tr><td>주소의 # 뒤만 다름</td><td>같은 페이지</td></tr><tr><td>주소의 ? 뒤가 다름</td><td>다른 페이지</td></tr></tbody></table></figure>
+    </section>
+    <section class="step" id="s08" data-icon="✅" data-title="검증">
+      <div class="kicker">✅ 08 · 검증</div>
+      <h2>탭 순서를 바꿔도 메모가 지켜진다</h2>
+      <p class="plain">두 탭을 여는 순서를 바꿔 가며 확인했고, 메모는 둘 다 남고 한 번 보내면 둘 다 전달됐다. 관련 자동 시험 49개가 모두 통과한다.</p>
+      <details class="tech" open><summary>기술 설명</summary><p>단위(session·bridge)와 e2e로 검증했다. 2026-09-30 HEAD(d898af4)에서 test/core/session.test.ts·bridge.test.ts 49/49 통과(R177·Task 69 B1 전용 3건 포함). e2e는 이번 확인에서 실행하지 않았다.</p></details>
+      <div class="evidence">근거: <code>test: test/core/session.test.ts › setDrafts stamps a brand-new draft with the message&#x27;s own page… (Task 69 B1)</code> <code>test: test/core/bridge.test.ts › two sockets drafting on different pages keep each other&#x27;s draft… (R177, Task 69 B1)</code> <code>log: npx vitest run test/core/session.test.ts test/core/bridge.test.ts → 49 passed (d898af4)</code></div>
+      <figure class="fig"><table class="mx"><thead><tr><th>시험</th><th>확인 내용</th><th>결과</th></tr></thead><tbody><tr><td>session 단위</td><td>페이지 단위 교체 (R177)</td><td>✅</td></tr><tr><td>session 단위</td><td>새 초안은 보낸 탭 page로 · 같은 id 중복 없음 (B1)</td><td>✅</td></tr><tr><td>bridge 단위</td><td>두 소켓 · 다른 페이지 · 순서가 바뀌어도 중복 없음</td><td>✅</td></tr><tr><td>e2e</td><td>두 탭 초안 유지 · 어느 탭에서 Send해도 둘 다 전달</td><td>⏸ 이번 확인에서 미실행</td></tr></tbody></table><figcaption>vitest 2.1.9 · d898af4 · 2026-09-30</figcaption></figure>
+    </section>
+  </div>
+</main>
+<footer class="wrap">cobro-recipe · R-001</footer>
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  var steps = [].slice.call(document.querySelectorAll('.step'));
+  var slot = document.getElementById('slot'), rail = document.getElementById('rail');
+  var figs = [], links = [];
+  steps.forEach(function(step){
+    var clone = step.querySelector('.fig').cloneNode(true);
+    slot.appendChild(clone); figs.push(clone);
+    var a = document.createElement('a');
+    a.href = '#' + step.id;
+    a.innerHTML = step.dataset.icon + '<span class="lbl">' + step.dataset.title + '</span>';
+    a.setAttribute('aria-label', step.dataset.title);
+    rail.appendChild(a); links.push(a);
+  });
+  function activate(i){
+    figs.forEach(function(f, j){ f.classList.toggle('on', j === i); });
+    links.forEach(function(a, j){ a.classList.toggle('on', j === i); });
+    var on = links[i];
+    if (on && rail.scrollWidth > rail.clientWidth) rail.scrollLeft = on.offsetLeft - rail.clientWidth / 2 + on.clientWidth / 2;
+  }
+  activate(0);
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) activate(steps.indexOf(e.target)); });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    steps.forEach(function(s){ io.observe(s); });
+  }
+  var KEY = 'cobro-recipe:mode', buttons = document.querySelectorAll('.mode button');
+  function setMode(m){
+    document.body.dataset.mode = m;
+    buttons.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.mode === m)); });
+    try { localStorage.setItem(KEY, m); } catch (e) {}
+  }
+  buttons.forEach(function(b){ b.addEventListener('click', function(){ setMode(b.dataset.mode); }); });
+  try { var saved = localStorage.getItem(KEY); if (saved) setMode(saved); } catch (e) {}
+})();
+</script>
+</body>
+</html>

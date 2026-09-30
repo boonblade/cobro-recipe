@@ -9,18 +9,30 @@
 - 기획서: [docs/PLAN.md](docs/PLAN.md)
 - 제안: [손그림 모션 스타일](docs/proposal-sketch-style.md)
 
-## 현재 단계: P0 (설계 확정)
+## 설치
 
-| 산출물 | 경로 |
+`.claude/skills/cobro-recipe/` 폴더를 대상 프로젝트의 `.claude/skills/` 또는 `~/.claude/skills/`에 복사한다.
+필요한 것: Python 3.8+ (표준 라이브러리만 사용, PyYAML이 있으면 사용).
+
+## 사용
+
+| 명령 | 하는 일 |
 |---|---|
-| Gate 기준 | [.claude/skills/cobro-recipe/references/gate-criteria.md](.claude/skills/cobro-recipe/references/gate-criteria.md) |
-| Scene 타입 | [.claude/skills/cobro-recipe/references/scene-types.md](.claude/skills/cobro-recipe/references/scene-types.md) |
-| 쉬운 설명 가이드 | [.claude/skills/cobro-recipe/references/plain-language-guide.md](.claude/skills/cobro-recipe/references/plain-language-guide.md) |
-| recipe.yaml 스키마 | [references/recipe-schema.md](.claude/skills/cobro-recipe/references/recipe-schema.md) · [schema/recipe.schema.json](.claude/skills/cobro-recipe/schema/recipe.schema.json) |
-| 레시피 양식 | [.claude/skills/cobro-recipe/templates/recipe.template.yaml](.claude/skills/cobro-recipe/templates/recipe.template.yaml) |
-| 도메인 팩 | [references/domain-packs.md](.claude/skills/cobro-recipe/references/domain-packs.md) · [packs/general.yaml](.claude/skills/cobro-recipe/packs/general.yaml) (기본) · [packs/garment-3d.yaml](.claude/skills/cobro-recipe/packs/garment-3d.yaml) |
-| 파일럿 레시피 (샘플, garment-3d 팩) | [examples/R-001-seam-stitching/](.claude/skills/cobro-recipe/examples/R-001-seam-stitching/) — `recipe.yaml`, `recipe.html`(clean), `recipe.sketch.html`(sketch) |
+| `/cobro-recipe init` | 프로젝트에서 도메인 팩 추출 → `recipes/pack.yaml` |
+| `/cobro-recipe write <커밋 범위>` | git 이력·대화로 레시피 작성 → 검사 → HTML → 인덱스 |
+| `/cobro-recipe search <증상>` | 쌓인 레시피에서 비슷한 문제 찾기 |
+| (자동 제안) | 까다로운 문제를 해결하면 Gate 점수로 레시피화를 제안 |
 
-파일럿 레시피는 형식 시연용 샘플이다 (`status: sample`). 수치·코드는 예시이며 실제 커밋 근거가 없다.
+## 현재 단계: P1 완료
 
-다음 단계 P1: `SKILL.md`, `templates/scrolly.html`, `scripts/render.py`·`validate.py`.
+| 구성 | 경로 |
+|---|---|
+| 스킬 본체 | [SKILL.md](.claude/skills/cobro-recipe/SKILL.md) |
+| 스크립트 | [scripts/](.claude/skills/cobro-recipe/scripts/) — `validate.py` · `render.py` · `build_index.py` · `search.py` · `recipe_io.py`(내장 YAML 파서) |
+| 템플릿 | [templates/clean.html](.claude/skills/cobro-recipe/templates/clean.html) · [recipe.template.yaml](.claude/skills/cobro-recipe/templates/recipe.template.yaml) |
+| 규칙 | [references/](.claude/skills/cobro-recipe/references/) — Gate · Scene 타입 · 쉬운 설명 · 스키마 · 도메인 팩 |
+| 내장 팩 | [packs/general.yaml](.claude/skills/cobro-recipe/packs/general.yaml) (기본) · [packs/garment-3d.yaml](.claude/skills/cobro-recipe/packs/garment-3d.yaml) |
+| **실전 검증** | [examples/cobro-mcp/](examples/cobro-mcp/) — cobro-mcp에서 `init` → R-001 "여러 탭에서 쓴 초안 지키기" |
+| 형식 샘플 | [R-001 봉제선](.claude/skills/cobro-recipe/examples/R-001-seam-stitching/) — clean·sketch 목업 (`status: sample`) |
+
+다음 단계 P2: capture(작업 중 기록), 자동 제안 정착, 도식 부품 보강, 도메인별 추가 검증.
