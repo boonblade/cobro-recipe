@@ -2,6 +2,8 @@
  "version": 1,
  "recipes": [
   {
+   "project": "cobro-mcp",
+   "lang": "ko",
    "id": "R-001",
    "slug": "cross-tab-drafts",
    "title": "여러 탭에서 쓴 초안 지키기",

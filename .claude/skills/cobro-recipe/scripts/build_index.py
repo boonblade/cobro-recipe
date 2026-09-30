@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from recipe_io import load_yaml  # noqa: E402
+from recipe_io import find_pack, load_yaml  # noqa: E402
 
 
 def entry(path: Path, root: Path) -> dict:
@@ -19,7 +19,10 @@ def entry(path: Path, root: Path) -> dict:
     s = r.get("search") or {}
     sm = r.get("summary") or {}
     html = path.with_name("recipe.html")
+    pk = find_pack(path, r.get("pack"))
+    pack = load_yaml(pk) if pk else {}
     return {
+        "project": (pack.get("project") or {}).get("name"), "lang": r.get("lang") or pack.get("lang") or "ko",
         "id": r.get("id"), "slug": r.get("slug"), "title": r.get("title"), "status": r.get("status"),
         "pack": r.get("pack", "general"), "domain": r.get("domain") or [],
         "gate": (r.get("gate") or {}).get("score"),
@@ -42,10 +45,11 @@ def main(argv: list[str]) -> int:
             bad.append(f"{f}: {ex}")
     items.sort(key=lambda x: str(x["id"]))
     (root / "INDEX.json").write_text(json.dumps({"version": 1, "recipes": items}, ensure_ascii=False, indent=1), encoding="utf-8")
-    lines = ["# Recipe Book", "", "| ID | 제목 | 상태 | Gate | 태그 |", "|---|---|---|---|---|"]
+    proj = next((x["project"] for x in items if x.get("project")), None)
+    lines = [f"# Recipe Book{' — ' + proj if proj else ''}", "", "| ID | 제목 | 언어 | 상태 | Gate | 태그 |", "|---|---|---|---|---|---|"]
     for x in items:
         link = f"[{x['title']}]({x['html'] or x['yaml']})"
-        lines.append(f"| {x['id']} | {link} | {x['status']} | {x['gate']} | {', '.join(x['domain'])} |")
+        lines.append(f"| {x['id']} | {link} | {x['lang']} | {x['status']} | {x['gate']} | {', '.join(x['domain'])} |")
     (root / "INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"✓ {root / 'INDEX.json'} · {root / 'INDEX.md'}  (레시피 {len(items)}건)")
     for b in bad:

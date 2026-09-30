@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>R-001 여러 탭에서 쓴 초안 지키기</title>
+<title>cobro-mcp · R-001 여러 탭에서 쓴 초안 지키기</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
@@ -87,7 +87,7 @@ body[data-nav="scroll"] .spacer{height:1200vh}
 <body data-read="both" data-nav="play">
 
 <div class="stage" id="stage">
-  <canvas id="cv" aria-label="R-001 여러 탭에서 쓴 초안 지키기 — 손그림 레시피"></canvas>
+  <canvas id="cv" aria-label="cobro-mcp · R-001 여러 탭에서 쓴 초안 지키기"></canvas>
   <div class="caption" aria-live="polite">
     <div class="k" id="capK"></div>
     <p class="p" id="capP"></p>
@@ -98,29 +98,29 @@ body[data-nav="scroll"] .spacer{height:1200vh}
 <div class="spacer"></div>
 
 <div class="controls">
-  <button class="play" id="play" aria-label="재생/일시정지" title="재생/일시정지 (Space)">❚❚</button>
-  <button class="ic" id="prev" aria-label="이전 장면" title="이전 장면 (←)">⏮</button>
-  <button class="ic" id="next" aria-label="다음 장면" title="다음 장면 (→)">⏭</button>
+  <button class="play" id="play" data-i18n-aria="playPause" data-i18n-title="playPauseKey">❚❚</button>
+  <button class="ic" id="prev" data-i18n-aria="prev" data-i18n-title="prevKey">⏮</button>
+  <button class="ic" id="next" data-i18n-aria="next" data-i18n-title="nextKey">⏭</button>
   <span class="spdwrap">
-    <button class="spd" id="speed" aria-label="재생 속도" aria-haspopup="menu" aria-expanded="false" aria-controls="speedMenu" title="재생 속도 (− / +)">1×</button>
-    <div class="menu" id="speedMenu" role="menu" aria-label="재생 속도" hidden></div>
+    <button class="spd" id="speed" data-i18n-aria="speed" data-i18n-title="speedKey" aria-haspopup="menu" aria-expanded="false" aria-controls="speedMenu">1×</button>
+    <div class="menu" id="speedMenu" role="menu" data-i18n-aria="speed" hidden></div>
   </span>
-  <input type="range" id="seek" min="0" step="0.01" aria-label="재생 위치">
+  <input type="range" id="seek" min="0" step="0.01" data-i18n-aria="seek">
   <span class="time" id="time">0.0 / 0.0</span>
-  <span class="grp nav" role="group" aria-label="진행 방식">
-    <button data-nav="play" aria-pressed="true">재생</button>
-    <button data-nav="scroll" aria-pressed="false">스크롤</button>
+  <span class="grp nav" role="group" data-i18n-aria="navMode">
+    <button data-nav="play" aria-pressed="true" data-i18n="play">재생</button>
+    <button data-nav="scroll" aria-pressed="false" data-i18n="scroll">스크롤</button>
   </span>
-  <span class="grp read" role="group" aria-label="설명">
-    <button data-read="plain" aria-pressed="false">쉬운</button>
-    <button data-read="both" aria-pressed="true">둘 다</button>
-    <button data-read="tech" aria-pressed="false">기술</button>
+  <span class="grp read" role="group" data-i18n-aria="readMode">
+    <button data-read="plain" aria-pressed="false" data-i18n="plain">쉬운</button>
+    <button data-read="both" aria-pressed="true" data-i18n="both">둘 다</button>
+    <button data-read="tech" aria-pressed="false" data-i18n="tech">기술</button>
   </span>
 </div>
 
 <article class="doc" id="doc">
 <h1>여러 탭에서 쓴 초안 지키기</h1>
-<p class="meta">R-001 · 검토 중 · Gate 6점</p>
+<p class="meta">cobro-mcp · R-001 · 검토 중 · Gate 6점</p>
 <p>한 탭에서 써 둔 메모가 다른 탭에서 메모를 고치면 사라졌다. 탭마다 자기 페이지 메모만 바꾸게 하고, 메모의 페이지 이름표도 보낸 탭이 직접 달게 해서 해결했다.</p>
 <p class="tech">draft 메시지 처리를 전체 교체에서 페이지 단위 교체로 바꾸고(R177), 새 초안의 page를 전역 s.page가 아니라 메시지를 보낸 탭의 page로 찍으며 교체 대상 id는 유지 목록에서 제외했다(Task 69 B1).</p>
 <section><h2>01 문제 · 다른 탭에서 쓰면 앞 탭 메모가 사라진다</h2><p>탭 두 개에서 각각 메모를 쓰는데, 둘째 탭에서 메모를 고치자 첫째 탭에 써 둔 메모가 사라졌다.</p><p class="tech">같은 세션에 연결된 두 오버레이(탭)가 각자 draft 메시지를 보낼 때, 한 탭의 메시지가 다른 탭이 만든 서버 초안을 지운다.</p><p class="ev">근거 <a href="https://github.com/boonblade/cobro-mcp/commit/fd91128" target="_blank" rel="noopener">fd91128</a> <a href="https://github.com/boonblade/cobro-mcp/blob/fd91128/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a> <code>메모: Drafts made in one tab are no longer wiped when you edit a draft in another tab</code></p></section>
@@ -134,7 +134,7 @@ body[data-nav="scroll"] .spacer{height:1200vh}
 <section><h2>정리</h2><p>메모의 이름표는 보낸 탭이 단다</p></section>
 </article>
 
-<script id="recipe-data" type="application/json">{"id": "R-001", "title": "여러 탭에서 쓴 초안 지키기", "subtitle": "R-001 · 검토 중 · Gate 6점 · 사후 재구성", "lesson": "메모의 이름표는 보낸 탭이 단다", "summary": {"plain": "한 탭에서 써 둔 메모가 다른 탭에서 메모를 고치면 사라졌다. 탭마다 자기 페이지 메모만 바꾸게 하고, 메모의 페이지 이름표도 보낸 탭이 직접 달게 해서 해결했다.", "tech": "draft 메시지 처리를 전체 교체에서 페이지 단위 교체로 바꾸고(R177), 새 초안의 page를 전역 s.page가 아니라 메시지를 보낸 탭의 page로 찍으며 교체 대상 id는 유지 목록에서 제외했다(Task 69 B1)."}, "theme": {"protagonist": "pencil", "trail": "dash", "doodles": ["star", "arrow", "spiral", "box"]}, "scenes": [{"type": "problem", "title": "다른 탭에서 쓰면 앞 탭 메모가 사라진다", "plain": "탭 두 개에서 각각 메모를 쓰는데, 둘째 탭에서 메모를 고치자 첫째 탭에 써 둔 메모가 사라졌다.", "tech": "같은 세션에 연결된 두 오버레이(탭)가 각자 draft 메시지를 보낼 때, 한 탭의 메시지가 다른 탭이 만든 서버 초안을 지운다.", "visual": {"kind": "compare-grid", "caption": "같은 세션, 서로 다른 페이지의 두 탭", "items": [{"label": "① 탭 A 메모", "state": "ok", "note": "저장됨"}, {"label": "② 탭 B 메모", "state": "ok", "note": "저장됨"}, {"label": "③ 탭 A 메모 다시 보기", "state": "ng", "note": "사라짐"}]}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/fd91128\" target=\"_blank\" rel=\"noopener\">fd91128<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/fd91128/CHANGELOG.md\" target=\"_blank\" rel=\"noopener\">CHANGELOG.md<\/a> <code>메모: Drafts made in one tab are no longer wiped when you edit a draft in another tab<\/code>"}, {"type": "observe", "title": "초안 메시지가 \"전부 바꾸기\"였다", "plain": "각 탭은 \"내가 가진 메모 전부\"를 보내고, 받는 쪽은 그것으로 메모함 전체를 갈아 끼우고 있었다. 둘째 탭은 첫째 탭 메모를 모르니 그 메모 없이 덮어쓴 셈이다.", "tech": "OverlayMsg 'draft'의 계약이 \"status draft인 것 전체 교체\"였고, SessionCore.setDrafts(batches)는 draft가 아닌 배치만 남기고 초안을 통째로 교체했다.", "visual": {"kind": "code-diff", "lang": "ts", "caption": "수정 전 setDrafts — 초안은 전부 버리고 받은 것으로 교체", "snippet": "setDrafts(batches: Batch[]): void {\n  const others = this.s.batches.filter((b) => b.status !== 'draft');\n  ...\n"}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/dd6596f\" target=\"_blank\" rel=\"noopener\">dd6596f<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/session.ts\" target=\"_blank\" rel=\"noopener\">src/core/session.ts<\/a> <code>메모: 수정 전 코드는 dd6596f의 부모 34-35행<\/code> <a href=\"https://github.com/boonblade/cobro-mcp/commit/dd6596f\" target=\"_blank\" rel=\"noopener\">dd6596f<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/types.ts\" target=\"_blank\" rel=\"noopener\">src/core/types.ts<\/a>"}, {"type": "attempt", "title": "시도 1: 페이지 단위로 바꾸기", "plain": "메모함을 통째로 바꾸지 않고, 보낸 탭의 페이지 메모만 바꾸게 했다. 탭 쪽도 자기 페이지 메모만 보내고, 받은 목록에 다른 탭 메모를 합쳐 보관하게 했다.", "tech": "draft 메시지에 page(location.href)를 추가하고 setDrafts(batches, pageUrl)가 samePage인 초안만 교체하게 했다. 오버레이 flushDraft는 현재 페이지 초안만 보내고, state 수신 시 서버 순서대로 병합한다.", "visual": {"kind": "code-diff", "lang": "ts", "caption": "같은 페이지 초안만 교체 대상", "before": "const others = this.s.batches.filter((b) => b.status !== 'draft');\n", "after": "const others = this.s.batches.filter((b) => {\n  if (b.status !== 'draft') return true;\n  if (!pageUrl) return false;\n  return !!b.page && !samePage(b.page.url, pageUrl);\n});\n"}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/dd6596f\" target=\"_blank\" rel=\"noopener\">dd6596f<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/session.ts\" target=\"_blank\" rel=\"noopener\">src/core/session.ts<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/commit/fd91128\" target=\"_blank\" rel=\"noopener\">fd91128<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/fd91128/src/overlay/index.ts\" target=\"_blank\" rel=\"noopener\">src/overlay/index.ts<\/a> <code>테스트: test/core/session.test.ts › setDrafts replaces drafts per page when a pageUrl is given (R177)<\/code>"}, {"type": "fail", "title": "여는 순서를 바꾸면 이름표가 틀리고 메모가 둘로 는다", "plain": "리뷰에서 막혔다. 첫째 탭을 열어 두고 둘째 탭을 연 뒤 첫째 탭에서 새 메모를 쓰면, 그 메모에 둘째 탭 페이지 이름표가 붙었고 다음 저장 때 같은 메모가 두 개로 늘어났다.", "tech": "새 초안의 page를 서버 전역 s.page(마지막에 연결한 탭)로 찍어 라벨이 어긋났다. 같은 id를 다시 보내면 samePage 불일치로 others에 남는 동시에 kept에도 들어가 중복 증식했다(리뷰 Task 69 B1).", "visual": {"kind": "compare-grid", "caption": "시도 1은 탭 연결 순서에 따라 결과가 갈린다", "items": [{"label": "A 메모 → B 열기", "state": "ok", "note": "시도 1로 해결"}, {"label": "A 열기 → B 열기 → A 새 메모", "state": "ng", "note": "이름표 B · 메모 2개"}]}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <code>메모: 커밋 메시지: Task 69 B1 — 초안 page를 보낸 탭의 페이지로 찍고 교체 대상 id를 유지 목록에서 제외<\/code> <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/test/e2e/overlay.spec.ts#L1281\" target=\"_blank\" rel=\"noopener\">test/e2e/overlay.spec.ts:1281<\/a> <code>메모: B1 재현 순서(순차 탭 전환)로 e2e 수정<\/code>"}, {"type": "discovery", "title": "칠판이 하나뿐이었다", "plain": "메모를 얼마나 바꾸느냐가 아니라 \"이 메모가 어느 탭에서 왔나\"를 모르는 게 문제였다. 서버는 회의실 칠판 하나에 마지막으로 들어온 탭 이름만 적어 두고, 모든 새 메모에 그 이름표를 붙이고 있었다.", "tech": "원인은 교체 범위가 아니라 발신 맥락의 부재였다. setDrafts가 새 초안의 page를 전역 s.page에서 가져와 멀티탭에서 연결 순서에 따라 라벨이 달라졌고, 라벨이 어긋나면 교체 대상 판정(samePage)도 함께 어긋났다.", "visual": {"kind": "diagram", "type": "before-after", "caption": "이름표를 누가 다는가", "spec": {"before_title": "전역 칠판(s.page)이 이름표를 단다", "before": ["탭 A 연결 → 칠판: A", "탭 B 연결 → 칠판: B", "탭 A 새 메모 → 이름표 B ✗"], "after_title": "보낸 탭이 이름표를 단다", "after": ["탭 A 새 메모 + '나는 A 페이지'", "서버: 이름표 A ✓", "이번에 받은 id는 항상 교체 대상"]}}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/session.ts#L57\" target=\"_blank\" rel=\"noopener\">src/core/session.ts:57<\/a>"}, {"type": "solution", "title": "보낸 탭이 이름표를 단다", "plain": "메모를 보낼 때 탭이 자기 페이지 이름표를 함께 보내고, 서버는 새 메모에 그 이름표를 그대로 단다. 이번에 받은 메모는 이름표와 상관없이 항상 새것으로 바꿔 중복을 막았다.", "tech": "draft 메시지의 page를 {url, title} 객체로 바꾸고, setDrafts(batches, page)가 처음 보는 초안을 메시지 page로 stamp한다. keptIds에 든 id는 others에서 무조건 제외한다. bridge는 page.url이 문자열일 때만 넘긴다(하위 호환).", "visual": {"kind": "code-diff", "lang": "ts", "caption": "src/core/session.ts @ 9af6e18", "snippet": "const keptIds = new Set(kept.map((b) => b.id));\nconst others = this.s.batches.filter((b) => {\n  if (keptIds.has(b.id)) return false; // 교체 대상 id는 무조건 제외\n  if (b.status !== 'draft') return true;\n  if (!page) return false;\n  return !!b.page && !samePage(b.page.url, page.url);\n});\n// 처음 보는 초안은 메시지의 page(보낸 탭)로 찍는다\nconst stamped = prev ? prev.page : (page ?? (this.s.page ? { ... } : undefined));\n"}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/session.ts#L36-L58\" target=\"_blank\" rel=\"noopener\">src/core/session.ts:36-58<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/bridge.ts#L37-L38\" target=\"_blank\" rel=\"noopener\">src/bridge.ts:37-38<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/types.ts#L52\" target=\"_blank\" rel=\"noopener\">src/core/types.ts:52<\/a>"}, {"type": "edge", "title": "옛 버전 탭과 주소 비교 규칙", "plain": "옛 버전 탭이 페이지 정보 없이 보내면 예전처럼 전체를 바꾼다. 주소에서", "tech": "page 없는 draft 메시지는 전체 교체(하위 호환), page 없는 옛 초안은 같은 페이지로 간주한다. samePage는 origin+pathname+search만 비교하고 hash는 무시한다(R163).", "visual": {"kind": "table", "columns": ["상황", "동작"], "rows": [["페이지 정보 없는 메시지 (옛 오버레이)", "전체 교체 — 기존 동작 유지"], ["페이지 정보 없는 옛 초안", "받는 탭의 페이지로 간주"], ["주소의 # 뒤만 다름", "같은 페이지"], ["주소의 ? 뒤가 다름", "다른 페이지"]]}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/d898af4\" target=\"_blank\" rel=\"noopener\">d898af4<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/d898af4/src/core/page.ts#L1-L7\" target=\"_blank\" rel=\"noopener\">src/core/page.ts:1-7<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/bridge.ts#L37\" target=\"_blank\" rel=\"noopener\">src/bridge.ts:37<\/a>"}, {"type": "verify", "title": "탭 순서를 바꿔도 메모가 지켜진다", "plain": "두 탭을 여는 순서를 바꿔 가며 확인했고, 메모는 둘 다 남고 한 번 보내면 둘 다 전달됐다. 관련 자동 시험 49개가 모두 통과한다.", "tech": "단위(session·bridge)와 e2e로 검증했다. 2026-09-30 HEAD(d898af4)에서 test/core/session.test.ts·bridge.test.ts 49/49 통과(R177·Task 69 B1 전용 3건 포함). e2e는 이번 확인에서 실행하지 않았다.", "visual": {"kind": "table", "caption": "vitest 2.1.9 · d898af4 · 2026-09-30", "columns": ["시험", "확인 내용", "결과"], "rows": [["session 단위", "페이지 단위 교체 (R177)", "✅"], ["session 단위", "새 초안은 보낸 탭 page로 · 같은 id 중복 없음 (B1)", "✅"], ["bridge 단위", "두 소켓 · 다른 페이지 · 순서가 바뀌어도 중복 없음", "✅"], ["e2e", "두 탭 초안 유지 · 어느 탭에서 Send해도 둘 다 전달", "⏸ 이번 확인에서 미실행"]]}, "evidence_html": "근거 <code>테스트: test/core/session.test.ts › setDrafts stamps a brand-new draft with the message&#x27;s own page… (Task 69 B1)<\/code> <code>테스트: test/core/bridge.test.ts › two sockets drafting on different pages keep each other&#x27;s draft… (R177, Task 69 B1)<\/code> <code>로그: npx vitest run test/core/session.test.ts test/core/bridge.test.ts → 49 passed (d898af4)<\/code>"}]}</script>
+<script id="recipe-data" type="application/json">{"id": "R-001", "title": "여러 탭에서 쓴 초안 지키기", "subtitle": "R-001 · 검토 중 · Gate 6점 · 사후 재구성", "lesson": "메모의 이름표는 보낸 탭이 단다", "lang": "ko", "project": {"name": "cobro-mcp", "url": "https://github.com/boonblade/cobro-mcp"}, "summary": {"plain": "한 탭에서 써 둔 메모가 다른 탭에서 메모를 고치면 사라졌다. 탭마다 자기 페이지 메모만 바꾸게 하고, 메모의 페이지 이름표도 보낸 탭이 직접 달게 해서 해결했다.", "tech": "draft 메시지 처리를 전체 교체에서 페이지 단위 교체로 바꾸고(R177), 새 초안의 page를 전역 s.page가 아니라 메시지를 보낸 탭의 page로 찍으며 교체 대상 id는 유지 목록에서 제외했다(Task 69 B1)."}, "theme": {"protagonist": "pencil", "trail": "dash", "doodles": ["star", "arrow", "spiral", "box"]}, "scenes": [{"type": "problem", "title": "다른 탭에서 쓰면 앞 탭 메모가 사라진다", "plain": "탭 두 개에서 각각 메모를 쓰는데, 둘째 탭에서 메모를 고치자 첫째 탭에 써 둔 메모가 사라졌다.", "tech": "같은 세션에 연결된 두 오버레이(탭)가 각자 draft 메시지를 보낼 때, 한 탭의 메시지가 다른 탭이 만든 서버 초안을 지운다.", "visual": {"kind": "compare-grid", "caption": "같은 세션, 서로 다른 페이지의 두 탭", "items": [{"label": "① 탭 A 메모", "state": "ok", "note": "저장됨"}, {"label": "② 탭 B 메모", "state": "ok", "note": "저장됨"}, {"label": "③ 탭 A 메모 다시 보기", "state": "ng", "note": "사라짐"}]}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/fd91128\" target=\"_blank\" rel=\"noopener\">fd91128<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/fd91128/CHANGELOG.md\" target=\"_blank\" rel=\"noopener\">CHANGELOG.md<\/a> <code>메모: Drafts made in one tab are no longer wiped when you edit a draft in another tab<\/code>"}, {"type": "observe", "title": "초안 메시지가 \"전부 바꾸기\"였다", "plain": "각 탭은 \"내가 가진 메모 전부\"를 보내고, 받는 쪽은 그것으로 메모함 전체를 갈아 끼우고 있었다. 둘째 탭은 첫째 탭 메모를 모르니 그 메모 없이 덮어쓴 셈이다.", "tech": "OverlayMsg 'draft'의 계약이 \"status draft인 것 전체 교체\"였고, SessionCore.setDrafts(batches)는 draft가 아닌 배치만 남기고 초안을 통째로 교체했다.", "visual": {"kind": "code-diff", "lang": "ts", "caption": "수정 전 setDrafts — 초안은 전부 버리고 받은 것으로 교체", "snippet": "setDrafts(batches: Batch[]): void {\n  const others = this.s.batches.filter((b) => b.status !== 'draft');\n  ...\n"}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/dd6596f\" target=\"_blank\" rel=\"noopener\">dd6596f<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/session.ts\" target=\"_blank\" rel=\"noopener\">src/core/session.ts<\/a> <code>메모: 수정 전 코드는 dd6596f의 부모 34-35행<\/code> <a href=\"https://github.com/boonblade/cobro-mcp/commit/dd6596f\" target=\"_blank\" rel=\"noopener\">dd6596f<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/types.ts\" target=\"_blank\" rel=\"noopener\">src/core/types.ts<\/a>"}, {"type": "attempt", "title": "시도 1: 페이지 단위로 바꾸기", "plain": "메모함을 통째로 바꾸지 않고, 보낸 탭의 페이지 메모만 바꾸게 했다. 탭 쪽도 자기 페이지 메모만 보내고, 받은 목록에 다른 탭 메모를 합쳐 보관하게 했다.", "tech": "draft 메시지에 page(location.href)를 추가하고 setDrafts(batches, pageUrl)가 samePage인 초안만 교체하게 했다. 오버레이 flushDraft는 현재 페이지 초안만 보내고, state 수신 시 서버 순서대로 병합한다.", "visual": {"kind": "code-diff", "lang": "ts", "caption": "같은 페이지 초안만 교체 대상", "before": "const others = this.s.batches.filter((b) => b.status !== 'draft');\n", "after": "const others = this.s.batches.filter((b) => {\n  if (b.status !== 'draft') return true;\n  if (!pageUrl) return false;\n  return !!b.page && !samePage(b.page.url, pageUrl);\n});\n"}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/dd6596f\" target=\"_blank\" rel=\"noopener\">dd6596f<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/dd6596f/src/core/session.ts\" target=\"_blank\" rel=\"noopener\">src/core/session.ts<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/commit/fd91128\" target=\"_blank\" rel=\"noopener\">fd91128<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/fd91128/src/overlay/index.ts\" target=\"_blank\" rel=\"noopener\">src/overlay/index.ts<\/a> <code>테스트: test/core/session.test.ts › setDrafts replaces drafts per page when a pageUrl is given (R177)<\/code>"}, {"type": "fail", "title": "여는 순서를 바꾸면 이름표가 틀리고 메모가 둘로 는다", "plain": "리뷰에서 막혔다. 첫째 탭을 열어 두고 둘째 탭을 연 뒤 첫째 탭에서 새 메모를 쓰면, 그 메모에 둘째 탭 페이지 이름표가 붙었고 다음 저장 때 같은 메모가 두 개로 늘어났다.", "tech": "새 초안의 page를 서버 전역 s.page(마지막에 연결한 탭)로 찍어 라벨이 어긋났다. 같은 id를 다시 보내면 samePage 불일치로 others에 남는 동시에 kept에도 들어가 중복 증식했다(리뷰 Task 69 B1).", "visual": {"kind": "compare-grid", "caption": "시도 1은 탭 연결 순서에 따라 결과가 갈린다", "items": [{"label": "A 메모 → B 열기", "state": "ok", "note": "시도 1로 해결"}, {"label": "A 열기 → B 열기 → A 새 메모", "state": "ng", "note": "이름표 B · 메모 2개"}]}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <code>메모: 커밋 메시지: Task 69 B1 — 초안 page를 보낸 탭의 페이지로 찍고 교체 대상 id를 유지 목록에서 제외<\/code> <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/test/e2e/overlay.spec.ts#L1281\" target=\"_blank\" rel=\"noopener\">test/e2e/overlay.spec.ts:1281<\/a> <code>메모: B1 재현 순서(순차 탭 전환)로 e2e 수정<\/code>"}, {"type": "discovery", "title": "칠판이 하나뿐이었다", "plain": "메모를 얼마나 바꾸느냐가 아니라 \"이 메모가 어느 탭에서 왔나\"를 모르는 게 문제였다. 서버는 회의실 칠판 하나에 마지막으로 들어온 탭 이름만 적어 두고, 모든 새 메모에 그 이름표를 붙이고 있었다.", "tech": "원인은 교체 범위가 아니라 발신 맥락의 부재였다. setDrafts가 새 초안의 page를 전역 s.page에서 가져와 멀티탭에서 연결 순서에 따라 라벨이 달라졌고, 라벨이 어긋나면 교체 대상 판정(samePage)도 함께 어긋났다.", "visual": {"kind": "diagram", "type": "before-after", "caption": "이름표를 누가 다는가", "spec": {"before_title": "전역 칠판(s.page)이 이름표를 단다", "before": ["탭 A 연결 → 칠판: A", "탭 B 연결 → 칠판: B", "탭 A 새 메모 → 이름표 B ✗"], "after_title": "보낸 탭이 이름표를 단다", "after": ["탭 A 새 메모 + '나는 A 페이지'", "서버: 이름표 A ✓", "이번에 받은 id는 항상 교체 대상"]}}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/session.ts#L57\" target=\"_blank\" rel=\"noopener\">src/core/session.ts:57<\/a>"}, {"type": "solution", "title": "보낸 탭이 이름표를 단다", "plain": "메모를 보낼 때 탭이 자기 페이지 이름표를 함께 보내고, 서버는 새 메모에 그 이름표를 그대로 단다. 이번에 받은 메모는 이름표와 상관없이 항상 새것으로 바꿔 중복을 막았다.", "tech": "draft 메시지의 page를 {url, title} 객체로 바꾸고, setDrafts(batches, page)가 처음 보는 초안을 메시지 page로 stamp한다. keptIds에 든 id는 others에서 무조건 제외한다. bridge는 page.url이 문자열일 때만 넘긴다(하위 호환).", "visual": {"kind": "code-diff", "lang": "ts", "caption": "src/core/session.ts @ 9af6e18", "snippet": "const keptIds = new Set(kept.map((b) => b.id));\nconst others = this.s.batches.filter((b) => {\n  if (keptIds.has(b.id)) return false; // 교체 대상 id는 무조건 제외\n  if (b.status !== 'draft') return true;\n  if (!page) return false;\n  return !!b.page && !samePage(b.page.url, page.url);\n});\n// 처음 보는 초안은 메시지의 page(보낸 탭)로 찍는다\nconst stamped = prev ? prev.page : (page ?? (this.s.page ? { ... } : undefined));\n"}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/session.ts#L36-L58\" target=\"_blank\" rel=\"noopener\">src/core/session.ts:36-58<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/bridge.ts#L37-L38\" target=\"_blank\" rel=\"noopener\">src/bridge.ts:37-38<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/core/types.ts#L52\" target=\"_blank\" rel=\"noopener\">src/core/types.ts:52<\/a>"}, {"type": "edge", "title": "옛 버전 탭과 주소 비교 규칙", "plain": "옛 버전 탭이 페이지 정보 없이 보내면 예전처럼 전체를 바꾼다. 주소에서", "tech": "page 없는 draft 메시지는 전체 교체(하위 호환), page 없는 옛 초안은 같은 페이지로 간주한다. samePage는 origin+pathname+search만 비교하고 hash는 무시한다(R163).", "visual": {"kind": "table", "columns": ["상황", "동작"], "rows": [["페이지 정보 없는 메시지 (옛 오버레이)", "전체 교체 — 기존 동작 유지"], ["페이지 정보 없는 옛 초안", "받는 탭의 페이지로 간주"], ["주소의 # 뒤만 다름", "같은 페이지"], ["주소의 ? 뒤가 다름", "다른 페이지"]]}, "evidence_html": "근거 <a href=\"https://github.com/boonblade/cobro-mcp/commit/d898af4\" target=\"_blank\" rel=\"noopener\">d898af4<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/d898af4/src/core/page.ts#L1-L7\" target=\"_blank\" rel=\"noopener\">src/core/page.ts:1-7<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/commit/9af6e18\" target=\"_blank\" rel=\"noopener\">9af6e18<\/a> <a href=\"https://github.com/boonblade/cobro-mcp/blob/9af6e18/src/bridge.ts#L37\" target=\"_blank\" rel=\"noopener\">src/bridge.ts:37<\/a>"}, {"type": "verify", "title": "탭 순서를 바꿔도 메모가 지켜진다", "plain": "두 탭을 여는 순서를 바꿔 가며 확인했고, 메모는 둘 다 남고 한 번 보내면 둘 다 전달됐다. 관련 자동 시험 49개가 모두 통과한다.", "tech": "단위(session·bridge)와 e2e로 검증했다. 2026-09-30 HEAD(d898af4)에서 test/core/session.test.ts·bridge.test.ts 49/49 통과(R177·Task 69 B1 전용 3건 포함). e2e는 이번 확인에서 실행하지 않았다.", "visual": {"kind": "table", "caption": "vitest 2.1.9 · d898af4 · 2026-09-30", "columns": ["시험", "확인 내용", "결과"], "rows": [["session 단위", "페이지 단위 교체 (R177)", "✅"], ["session 단위", "새 초안은 보낸 탭 page로 · 같은 id 중복 없음 (B1)", "✅"], ["bridge 단위", "두 소켓 · 다른 페이지 · 순서가 바뀌어도 중복 없음", "✅"], ["e2e", "두 탭 초안 유지 · 어느 탭에서 Send해도 둘 다 전달", "⏸ 이번 확인에서 미실행"]]}, "evidence_html": "근거 <code>테스트: test/core/session.test.ts › setDrafts stamps a brand-new draft with the message&#x27;s own page… (Task 69 B1)<\/code> <code>테스트: test/core/bridge.test.ts › two sockets drafting on different pages keep each other&#x27;s draft… (R177, Task 69 B1)<\/code> <code>로그: npx vitest run test/core/session.test.ts test/core/bridge.test.ts → 49 passed (d898af4)<\/code>"}]}</script>
 <script>
 (function(){
 'use strict';
@@ -151,7 +151,21 @@ const COLOR = {
   a: '#4F6F95', b: '#7A5EA3', steel: '#C9CDD2'
 };
 const ICON = { problem: '🚩', observe: '🔍', attempt: '🧪', fail: '❌', discovery: '🧠', solution: '🛠', edge: '⚠️', verify: '✅' };
-const NAME = { problem: '문제', observe: '관찰', attempt: '시도', fail: '실패', discovery: '발견', solution: '해결', edge: 'Edge', verify: '검증' };
+const I18N = {
+  ko: { types: { problem: '문제', observe: '관찰', attempt: '시도', fail: '실패', discovery: '발견', solution: '해결', edge: 'Edge', verify: '검증' },
+        playPause: '재생/일시정지', playPauseKey: '재생/일시정지 (Space)', prev: '이전 장면', prevKey: '이전 장면 (←)', next: '다음 장면', nextKey: '다음 장면 (→)',
+        speed: '재생 속도', speedKey: '재생 속도 (− / +)', seek: '재생 위치', navMode: '진행 방식', readMode: '설명',
+        play: '재생', scroll: '스크롤', plain: '쉬운', both: '둘 다', tech: '기술', slow: '느리게', normal: '보통', fast: '빠르게', outro: '정리' },
+  en: { types: { problem: 'Problem', observe: 'Observe', attempt: 'Attempt', fail: 'Fail', discovery: 'Discovery', solution: 'Solution', edge: 'Edge', verify: 'Verify' },
+        playPause: 'Play/Pause', playPauseKey: 'Play/Pause (Space)', prev: 'Previous scene', prevKey: 'Previous scene (←)', next: 'Next scene', nextKey: 'Next scene (→)',
+        speed: 'Playback speed', speedKey: 'Playback speed (− / +)', seek: 'Position', navMode: 'Navigation', readMode: 'Explanation',
+        play: 'Play', scroll: 'Scroll', plain: 'Plain', both: 'Both', tech: 'Tech', slow: 'slower', normal: 'normal', fast: 'faster', outro: 'Summary' }
+};
+const L = I18N[R.lang] || I18N.ko;
+const NAME = L.types;
+document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = L[el.dataset.i18n] ?? el.textContent; });
+document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', L[el.dataset.i18nAria]));
+document.querySelectorAll('[data-i18n-title]').forEach(el => el.setAttribute('title', L[el.dataset.i18nTitle]));
 const FONT = '"Gaegu","Nanum Pen Script","Comic Sans MS",cursive';
 const MONO = '"D2Coding","Consolas",ui-monospace,Menlo,monospace';
 const PENCIL = { width: 4, jitter: 1.7, step: 9, boilFps: 12, overlayAlpha: 0.45 };
@@ -509,7 +523,12 @@ function build(){
   const g = { st: [] };
   // 제목
   const TS = 84, tl = wrap(R.title, TS, 1000).slice(0, 2), tlh = TS * 1.15;
-  const ty = 190;
+  const proj = R.project && R.project.name ? String(R.project.name) : '';
+  const ty = proj ? 300 : 190;
+  if (proj){
+    const PS = 38, pw = measure(proj, PS) + 56;
+    g.proj = { s: proj, y: 150, size: PS, box: pencil([[PW / 2 - pw / 2, 118], [PW / 2 + pw / 2, 114], [PW / 2 + pw / 2 + 4, 186], [PW / 2 - pw / 2 - 2, 184]], { closed: true, jitter: 1.2 }) };
+  }
   g.title = { lines: tl, y: ty, size: TS, lh: tlh };
   const lastW = measure(tl[tl.length - 1], TS), ly = ty + (tl.length - 1) * tlh;
   g.titleUnder = pencil([[PW / 2 - lastW / 2, ly + 56], [PW / 2 + lastW / 2 + 20, ly + 52]]);
@@ -540,7 +559,7 @@ function build(){
   // 마무리
   const LE = 70, lesson = wrap(R.lesson || R.title, LE, 1000).slice(0, 2);
   g.lesson = { lines: lesson, y: y + 40, size: LE, lh: LE * 1.15 };
-  g.sign = { s: `cobro-recipe · ${R.id}`, y: g.lesson.y + (lesson.length - 1) * g.lesson.lh + 90 };
+  g.sign = { s: ['cobro-recipe', proj, R.id].filter(Boolean).join(' · '), y: g.lesson.y + (lesson.length - 1) * g.lesson.lh + 90 };
   g.H = g.sign.y + 150;
 
   // 주인공 경로: 정류장 사이를 여백으로 휘어 지나감
@@ -572,9 +591,11 @@ function build(){
   g.D = g.signT + dur(g.sign.s) / 2 + 2.5;
 
   // 카메라 (상자 기준: 화면에 상자가 들어오도록 확대가 정해진다)
-  const titleBox = { x: PW / 2, y: (ty + g.sub.y) / 2, w: 1100, h: g.sub.y - ty + 260 };
+  const tTop = proj ? 110 : ty;
+  const titleBox = { x: PW / 2, y: (tTop + g.sub.y) / 2, w: 1100, h: g.sub.y - tTop + 240 };
   const shrink = (b, k) => ({ ...b, w: b.w * k, h: b.h * k });
-  const K = [{ t: 0, box: titleBox }, { t: 1.9, box: shrink(titleBox, .92), e: 'ease' }];
+  // 제목은 첫 장면으로 떠나기 전까지 화면에 잡아 둔다
+  const K = [{ t: 0, box: titleBox }, { t: g.st.length ? g.st[0].hop[0] : 2, box: shrink(titleBox, .92), e: 'ease' }];
   g.st.forEach(s => {
     K.push({ t: s.hop[1], box: s.box, e: 'whip' });
     if (s.sc.type === 'discovery'){ K.push({ t: s.pt + .15, box: s.zoom, e: 'snap' }); K.push({ t: s.end, box: shrink(s.zoom, .95), e: 'ease' }); }
@@ -692,7 +713,11 @@ function render(t){
 
 function drawPaper(t, cam, s){
   const T = G.title;
-  writeLines(T.lines, PW / 2, T.y, T.size, T.lh, 0, t, { align: 'center' });
+  if (G.proj){
+    fill(G.proj.box, COLOR.hl, prog(t, 0, .3) * .8); stroke(G.proj.box, prog(t, 0, .35), { width: 3 });
+    write(G.proj.s, PW / 2, G.proj.y, G.proj.size, .1, t, { align: 'center', rate: 30 });
+  }
+  writeLines(T.lines, PW / 2, T.y, T.size, T.lh, .3, t, { align: 'center' });
   stroke(G.titleUnder, prog(t, 1.1, 1.5), { width: 3 });
   write(G.sub.s, PW / 2, G.sub.y, 40, .9, t, { align: 'center', color: COLOR.muted, rate: 24 });
 
@@ -737,7 +762,7 @@ function caption(t){
   if (idx === capIdx) return; capIdx = idx;
   const st = G.st[idx];
   const c = st ? { k: `${ICON[st.sc.type] || ''} ${String(idx + 1).padStart(2, '0')} ${NAME[st.sc.type] || ''} · ${st.sc.title}`, p: st.sc.plain, x: st.sc.tech, e: st.sc.evidence_html }
-    : { k: idx === 99 ? `정리 · ${R.id}` : (R.subtitle || R.id), p: R.summary.plain, x: R.summary.tech, e: '' };
+    : { k: idx === 99 ? `${L.outro} · ${R.id}` : [R.project && R.project.name, R.subtitle || R.id].filter(Boolean).join(' · '), p: R.summary.plain, x: R.summary.tech, e: '' };
   $('capK').textContent = c.k; $('capP').textContent = c.p || ''; $('capX').textContent = c.x || '';
   $('capE').innerHTML = c.e || '';   // render.py가 이스케이프한 근거 링크
 }
@@ -746,8 +771,8 @@ playBtn.onclick = () => { if (nav === 'scroll') setNav('play'); setPlaying(!play
 seek.oninput = () => { T = +seek.value; if (nav === 'scroll') syncScroll(); };
 seek.onpointerdown = () => setPlaying(false);
 
-const speedBtn = $('speed'), speedMenu = $('speedMenu'), SPEED_KEY = 'cobro-recipe:speed', HINT = { .5: '느리게', 1: '보통', 2: '빠르게' };
-speedMenu.innerHTML = '<div class="mh">재생 속도</div>' + SPEEDS.map(v => `<button type="button" role="menuitemradio" aria-checked="false" data-v="${v}"><span>${v}×</span>${HINT[v] ? `<small>${HINT[v]}</small>` : ''}</button>`).join('');
+const speedBtn = $('speed'), speedMenu = $('speedMenu'), SPEED_KEY = 'cobro-recipe:speed', HINT = { .5: L.slow, 1: L.normal, 2: L.fast };
+speedMenu.innerHTML = `<div class="mh">${L.speed}</div>` + SPEEDS.map(v => `<button type="button" role="menuitemradio" aria-checked="false" data-v="${v}"><span>${v}×</span>${HINT[v] ? `<small>${HINT[v]}</small>` : ''}</button>`).join('');
 const items = [...speedMenu.querySelectorAll('button')];
 function setSpeed(v){ speed = v; speedBtn.textContent = `${v}×`; items.forEach(b => b.setAttribute('aria-checked', String(+b.dataset.v === v))); try { localStorage.setItem(SPEED_KEY, String(v)); } catch (e) {} }
 function stepSpeed(d){ const i = SPEEDS.indexOf(speed); setSpeed(SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, i + d))]); }

@@ -11,6 +11,7 @@
 | `title` | string | ● | "~하기" 형태 권장 (예: 패턴 두 장을 봉제하기) |
 | `domain` | string[] | ● | 검색용 태그 (oracle, batch, three.js, seam …) |
 | `pack` | string | – | 도메인 팩 id. 생략 시 `general` ([domain-packs.md](domain-packs.md)) |
+| `lang` | `ko` \| `en` | – | 레시피 언어. 생략 시 팩 `lang` → `ko`. 화면 문구(버튼·장면 이름)도 이 언어로 바뀐다 |
 | `lesson` | string | – | 마지막 장면에서 크게 써지는 한 줄 교훈. 없으면 제목을 쓴다 |
 | `gate` | `{score, signals}` | ● | Gate 판정 결과. score ≥ 4 |
 | `status` | enum | ● | `draft` → `review` → `published`. 형식 시연용은 `sample` |

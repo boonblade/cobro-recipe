@@ -31,7 +31,7 @@ KINDS = {
 DIAGRAM_TYPES = ["flow", "pair", "before-after"]
 SIGNAL_POINTS = {"S1": 2, "S2": 2, "S3": 2, "S4": 1, "S5": 1, "S6": 1, "S7": 1}
 TOP_KEYS = {"id", "slug", "title", "domain", "pack", "gate", "status", "as_of", "audience",
-            "summary", "lesson", "scenes", "related", "search", "reconstructed"}
+            "summary", "lesson", "lang", "scenes", "related", "search", "reconstructed"}
 SHA = re.compile(r"^[0-9a-f]{7,40}$")
 
 
@@ -61,6 +61,8 @@ def check(path: Path) -> tuple[list[str], list[str]]:
     for a in r["audience"]:
         if a not in AUDIENCE:
             E.append(f"audience 값 오류: {a} (허용: {', '.join(AUDIENCE)})")
+    if r.get("lang") not in (None, "ko", "en"):
+        E.append(f"lang 값 오류: {r['lang']} (허용: ko, en)")
     if "lesson" in r and not isinstance(r["lesson"], str):
         E.append("lesson은 한 줄 문자열이어야 한다")
 
@@ -111,10 +113,16 @@ def check(path: Path) -> tuple[list[str], list[str]]:
             for it in v.get("items") or []:
                 if it.get("state") not in ("ok", "warn", "ng"):
                     E.append(f"{where}: compare-grid state 값 오류 {it.get('state')}")
+                extra = set(it) - {"label", "state", "note"}
+                if extra:
+                    E.append(f"{where}: compare-grid 항목에 모르는 키 {sorted(extra)} — 값에 쉼표·콜론이 있으면 큰따옴표로 감싸라")
         for ev in s.get("evidence") or []:
             if not isinstance(ev, dict) or not ev:
                 E.append(f"{where}: evidence 항목이 비었다")
                 continue
+            extra = set(ev) - {"commit", "file", "lines", "test", "log", "note"}
+            if extra:
+                E.append(f"{where}: evidence에 모르는 키 {sorted(extra)} — 값에 쉼표·콜론이 있으면 큰따옴표로 감싸라")
             if ev.get("commit") and not SHA.match(str(ev["commit"])):
                 E.append(f"{where}: evidence.commit 형식 오류 {ev['commit']}")
             if ev.get("lines") and not re.fullmatch(r"\d+(-\d+)?", str(ev["lines"])):
@@ -148,7 +156,12 @@ def check(path: Path) -> tuple[list[str], list[str]]:
         E.append(f"팩을 찾을 수 없음: {r.get('pack', 'general')} (recipes/pack.yaml 또는 packs/<id>.yaml)")
     else:
         try:
-            terms = [str(t.get("term", "")) for t in (load_yaml(pack).get("terms") or [])]
+            raw = load_yaml(pack).get("terms") or []
+            for t in raw:
+                extra = set(t) - {"term", "plain", "note", "review"}
+                if extra:
+                    E.append(f"팩 {pack.name}: 용어 {t.get('term')}에 모르는 키 {sorted(extra)} — 값에 쉼표가 있으면 큰따옴표로 감싸라")
+            terms = [str(t.get("term", "")) for t in raw]
         except Exception as e:  # noqa: BLE001
             terms = []
             W.append(f"팩 읽기 실패: {pack} ({e})")

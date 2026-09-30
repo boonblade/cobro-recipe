@@ -39,8 +39,16 @@ description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발
 
 1. `recipes/pack.yaml`이 이미 있으면 그것을 보여 주고 끝낸다.
 2. **샘플링만** 한다: README 앞부분, 최상위 디렉터리 구조, 설정 파일(package.json 등)의 이름·설명, `git log --format=%s -50`, 도메인 용어가 많은 파일명. 파일 전체를 읽지 않는다.
-3. `packs/general.yaml` 구조를 따라 `id`, `name`, `description`, `metaphor_source`, `business_readers`, `reviewer`, `domain_knowledge_examples`, `sketch`, `terms`(10~20개, `review: false`)를 채운다.
+3. `packs/general.yaml` 구조를 따라 `project`(`name`: package.json 이름 또는 저장소 이름, `url`: `git remote get-url origin`을 https로), `lang`(아래 "언어"), `id`, `name`, `description`, `metaphor_source`, `business_readers`, `reviewer`, `domain_knowledge_examples`, `sketch`, `terms`(10~20개, `review: false`)를 채운다.
 4. 요약을 보여 주고 승인·수정을 받은 뒤 저장한다.
+
+## 언어
+
+레시피 하나는 한 언어(`ko` | `en`)로 쓴다. 화면 문구(버튼·장면 이름·배지)는 `lang`에 맞춰 자동으로 바뀐다.
+정하는 순서: ① 사용자가 지정한 언어 → ② 로컬 팩 `lang` → ③ 지금 대화하는 언어.
+- `init`에서 팩 `lang`은 사용자의 대화 언어로 정하고 확인받는다. 영어 프로젝트의 시작 팩은 `packs/general-en.yaml`.
+- 대화 언어가 팩 `lang`과 다르면, 레시피에 `lang`을 명시하고 plain·tech·title·lesson을 그 언어로 쓴다.
+- 번역본이 필요하면 요청이 있을 때만 만든다(토큰 비용).
 
 ## write 절차
 
@@ -48,7 +56,7 @@ description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발
 2. **Gate**: `references/gate-criteria.md`로 신호를 고르고 점수를 계산한다(근거 있는 신호만).
 3. **작성**: `templates/recipe.template.yaml`을 복사해 채운다. scene 순서·타입은 `references/scene-types.md`, 쉬운 말은 `references/plain-language-guide.md`와 팩 사전(`recipes/pack.yaml` → `packs/general.yaml`)을 따른다. 새 비유는 로컬 팩 `terms`에 추가한다. 검색용 `search.symptoms`(현업이 말하는 증상)·`errors`(실제 에러 문구)를 채운다. **YAML 주의**: `#`, `? `, `: `, `[ ] { } ,`가 든 문자열과 에러 문구는 큰따옴표로 감싸고, 여러 줄은 `|`를 쓴다.
 4. **검사**: `validate.py recipes/<폴더>/recipe.yaml` — 오류 0이 될 때까지 고친다. 경고는 판단해서 고친다.
-5. **렌더**: `render.py recipes/<폴더>/recipe.yaml [--repo-url <저장소 URL>]` — 손그림 모션 HTML 한 가지. 장면 배치·시간표·카메라는 엔진이 자동으로 정하므로 AI가 HTML을 쓰지 않는다. 마지막에 크게 써지는 한 줄 교훈은 `lesson`에 적는다(없으면 제목).
+5. **렌더**: `render.py recipes/<폴더>/recipe.yaml` (근거 링크 주소는 팩 `project.url`, 다르면 `--repo-url`) — 손그림 모션 HTML 한 가지. 장면 배치·시간표·카메라는 엔진이 자동으로 정하므로 AI가 HTML을 쓰지 않는다. 마지막에 크게 써지는 한 줄 교훈은 `lesson`에 적는다(없으면 제목).
 6. **인덱스**: `build_index.py recipes`
 7. 사용자에게 결과를 3줄로 보고한다: 제목·Gate 점수, 파일 경로, 검토가 필요한 부분(`review: false` 비유, 근거가 약한 scene).
 
