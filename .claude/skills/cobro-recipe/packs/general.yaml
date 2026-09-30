@@ -1,0 +1,73 @@
+# 도메인 팩: 범용 (기본값)
+# 특정 업종 팩이 없을 때 쓰는 기본 비유 사전. 누구나 아는 일상·사무 상황에서 비유를 가져온다.
+# 구조와 사용법: references/domain-packs.md
+
+id: general
+name: 범용
+description: 업종과 무관한 소프트웨어 개발 레시피 (웹, ERP, 인프라, 데이터 등)
+metaphor_source: 일상·사무 (택배, 식당 주문, 도서관, 은행 창구, 이사, 번호표)
+business_readers: 현업 담당자, 경영진
+reviewer: 해당 업무 현업 담당자 1인
+domain_knowledge_examples: [회계 마감 규칙, 재고 할당 순서, 권한·결재 정책, 법규·세무 기준]
+
+sketch:
+  protagonist: pencil        # 연필 — 지나간 길이 연필 점선으로 남는다
+  trail: dash
+  doodles: [star, arrow, spiral, box]
+
+terms:
+  - term: API
+    plain: 주문 창구
+    note: 정해진 양식으로 요청하면 정해진 형태로 결과를 돌려줌
+    review: false
+  - term: cache
+    plain: 자주 쓰는 서류를 책상 위에 올려 두기
+    review: false
+  - term: database index
+    plain: 책 뒤의 찾아보기(색인)
+    review: false
+  - term: queue
+    plain: 번호표 대기줄
+    review: false
+  - term: timeout
+    plain: 전화 대기하다 끊김
+    review: false
+  - term: retry
+    plain: 다시 걸기
+    review: false
+  - term: race condition
+    plain: 두 사람이 같은 좌석을 동시에 예약
+    review: false
+  - term: deadlock
+    plain: 좁은 골목에서 마주친 두 차가 서로 비켜 주기만 기다림
+    review: false
+  - term: transaction
+    plain: 이체처럼 "전부 되거나 전부 안 되거나"
+    review: false
+  - term: rollback
+    plain: 실행 취소 (되돌리기)
+    review: false
+  - term: migration
+    plain: 이사 (짐을 새 집 구조에 맞춰 옮기기)
+    review: false
+  - term: schema
+    plain: 서류 양식
+    review: false
+  - term: null
+    plain: 빈칸
+    review: false
+  - term: encoding
+    plain: 글자를 저장하는 약속 (다르면 한글이 깨짐)
+    review: false
+  - term: memory leak
+    plain: 수도꼭지를 덜 잠가 물이 조금씩 샘
+    review: false
+  - term: deploy
+    plain: 새 버전을 매장에 진열
+    review: false
+  - term: environment variable
+    plain: 지점마다 다른 설정 메모
+    review: false
+  - term: concurrency
+    plain: 여러 창구가 동시에 손님을 받음
+    review: false

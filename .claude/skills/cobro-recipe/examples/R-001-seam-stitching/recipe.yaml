@@ -6,13 +6,14 @@ id: R-001
 slug: seam-stitching
 title: 패턴 두 장을 봉제하기
 domain: [three.js, seam, pattern, grading]
+pack: garment-3d
 gate:
   score: 7
   signals: [S1, S2, S4, S5, S7]
 status: sample
 as_of:
   date: 2026-09-30
-audience: [dev, pattern-room, md]
+audience: [dev, business]
 summary:
   plain: 앞판과 뒷판을 붙였더니 옆선이 벌어졌다. 끝점을 맞추는 대신 "어느 선끼리 붙는지"를 정해 두고 그 선을 기준으로 맞춰 붙여서 해결했다.
   tech: seam을 ID 기반 edge pair로 모델링하고, 공통 edge를 기준으로 panel transform을 계산해 사이즈와 무관하게 정합.
