@@ -6,6 +6,9 @@ id: R-000
 slug: short-kebab-title
 title: ~하기
 domain: []
+pack: general       # packs/<id>.yaml — 생략 시 general
+render:
+  style: clean      # clean | sketch
 gate:
   score: 0          # 4 이상
   signals: []       # S1 ~ S7
@@ -13,7 +16,7 @@ status: draft       # draft | review | published | sample
 as_of:
   commit: 0000000
   date: 2026-01-01
-audience: [dev, pattern-room]
+audience: [dev, business]   # dev | business | ops | exec
 summary:
   plain:
   tech:
@@ -89,3 +92,8 @@ scenes:
     evidence: [{ test: }]
 
 related: []
+
+search:             # 선택 — 지식 검색용
+  symptoms: []      # 현업이 말하는 증상
+  errors: []        # 실제 에러 문구
+  keywords: []
