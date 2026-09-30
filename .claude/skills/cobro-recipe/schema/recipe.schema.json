@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cobro-recipe/recipe.schema.json",
+  "title": "cobro-recipe recipe.yaml",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "slug", "title", "domain", "gate", "status", "as_of", "audience", "summary", "scenes", "reconstructed"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^R-\\d{3}$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "domain": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "signals"],
+      "properties": {
+        "score": { "type": "integer", "minimum": 4, "maximum": 10 },
+        "signals": {
+          "type": "array",
+          "items": { "enum": ["S1", "S2", "S3", "S4", "S5", "S6", "S7"] },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "status": { "enum": ["draft", "review", "published", "sample"] },
+    "as_of": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date"],
+      "properties": {
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+        "date": { "type": "string", "format": "date" }
+      }
+    },
+    "audience": {
+      "type": "array",
+      "items": { "enum": ["dev", "pattern-room", "md", "exec"] },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "summary": { "$ref": "#/$defs/twoLayer" },
+    "scenes": { "type": "array", "items": { "$ref": "#/$defs/scene" }, "minItems": 6 },
+    "related": { "type": "array", "items": { "type": "string", "pattern": "^R-\\d{3}$" } },
+    "reconstructed": { "type": "boolean" }
+  },
+  "$defs": {
+    "twoLayer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plain", "tech"],
+      "properties": {
+        "plain": { "type": "string", "minLength": 1 },
+        "tech": { "type": "string", "minLength": 1 }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "title", "plain", "tech", "visual", "evidence"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^s\\d{2}$" },
+        "type": { "enum": ["problem", "observe", "attempt", "fail", "discovery", "solution", "edge", "verify"] },
+        "title": { "type": "string", "minLength": 1 },
+        "plain": { "type": "string", "minLength": 1 },
+        "tech": { "type": "string", "minLength": 1 },
+        "visual": { "$ref": "#/$defs/visual" },
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+        "file": { "type": "string" },
+        "lines": { "type": "string", "pattern": "^\\d+(-\\d+)?$" },
+        "test": { "type": "string" },
+        "log": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "visual": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["image", "svg", "code-diff", "compare-grid", "table", "diagram", "3d"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "kind": { "const": "image" } } },
+          "then": { "required": ["src", "alt"] } },
+        { "if": { "properties": { "kind": { "const": "svg" } } },
+          "then": { "anyOf": [{ "required": ["src"] }, { "required": ["inline"] }] } },
+        { "if": { "properties": { "kind": { "const": "code-diff" } } },
+          "then": { "required": ["lang"], "anyOf": [{ "required": ["before", "after"] }, { "required": ["snippet"] }] } },
+        { "if": { "properties": { "kind": { "const": "compare-grid" } } },
+          "then": {
+            "required": ["items"],
+            "properties": {
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "object",
+                  "required": ["label", "state"],
+                  "properties": {
+                    "label": { "type": "string" },
+                    "state": { "enum": ["ok", "warn", "ng"] },
+                    "note": { "type": "string" }
+                  }
+                }
+              }
+            }
+          } },
+        { "if": { "properties": { "kind": { "const": "table" } } },
+          "then": { "required": ["columns", "rows"] } },
+        { "if": { "properties": { "kind": { "const": "diagram" } } },
+          "then": { "required": ["type", "spec"] } },
+        { "if": { "properties": { "kind": { "const": "3d" } } },
+          "then": { "required": ["src"] } }
+      ]
+    }
+  }
+}

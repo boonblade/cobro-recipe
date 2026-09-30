@@ -1,0 +1,91 @@
+# cobro-recipe 레시피 양식
+# 저장 위치: <프로젝트>/recipes/<id>-<slug>/recipe.yaml
+# 규칙: references/recipe-schema.md, references/scene-types.md, references/plain-language-guide.md
+
+id: R-000
+slug: short-kebab-title
+title: ~하기
+domain: []
+gate:
+  score: 0          # 4 이상
+  signals: []       # S1 ~ S7
+status: draft       # draft | review | published | sample
+as_of:
+  commit: 0000000
+  date: 2026-01-01
+audience: [dev, pattern-room]
+summary:
+  plain:
+  tech:
+reconstructed: false
+
+scenes:
+  - id: s01
+    type: problem
+    title:
+    plain:
+    tech:
+    visual: { kind: image, src: assets/s01.png, alt: }
+    evidence: [{ commit: 0000000 }]
+
+  - id: s02
+    type: observe
+    title:
+    plain:
+    tech:
+    visual: { kind: svg, src: assets/s02.svg }
+    evidence: [{ file: , lines: }]
+
+  - id: s03
+    type: attempt
+    title:
+    plain:
+    tech:
+    visual: { kind: code-diff, lang: ts, before: "", after: "" }
+    evidence: [{ commit: 0000000 }]
+
+  - id: s04
+    type: fail
+    title:
+    plain:
+    tech:
+    visual:
+      kind: compare-grid
+      items:
+        - { label: , state: ok }
+        - { label: , state: ng }
+    evidence: [{ test: }]
+
+  - id: s05
+    type: discovery
+    title:
+    plain:
+    tech:
+    visual: { kind: svg, src: assets/s05.svg }
+    evidence: [{ commit: 0000000 }]
+
+  - id: s06
+    type: solution
+    title:
+    plain:
+    tech:
+    visual: { kind: code-diff, lang: ts, snippet: "" }
+    evidence: [{ commit: 0000000, file: , lines: }]
+
+  - id: s07
+    type: edge
+    title:
+    plain:
+    tech:
+    visual: { kind: table, columns: [], rows: [] }
+    evidence: [{ test: }]
+
+  - id: s08
+    type: verify
+    title:
+    plain:
+    tech:
+    visual: { kind: table, columns: [], rows: [] }
+    evidence: [{ test: }]
+
+related: []

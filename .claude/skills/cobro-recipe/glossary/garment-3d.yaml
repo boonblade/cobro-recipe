@@ -1,0 +1,61 @@
+# 기술 용어 → 쉬운 비유 사전 (3D 의류 / Three.js)
+# plain 설명을 쓸 때 이 사전의 비유를 먼저 사용한다. 새 비유를 만들면 여기에 추가한다.
+# review: 패턴실 리뷰 완료 여부
+
+terms:
+  - term: mesh
+    plain: 천 한 장
+    note: 3D 공간에 놓인 패턴 조각 하나
+    review: false
+  - term: vertex
+    plain: 천 위에 꽂은 핀
+    note: 천의 모양을 정하는 점
+    review: false
+  - term: edge
+    plain: 천의 가장자리 선
+    review: false
+  - term: seam / seam edge
+    plain: 봉제선
+    review: false
+  - term: seam pair
+    plain: 서로 박음질되는 두 가장자리의 짝
+    review: false
+  - term: winding order
+    plain: 천의 겉/안 방향
+    note: 순서가 뒤집히면 겉면이 안쪽으로 인식되어 화면에서 사라짐
+    review: false
+  - term: backface culling
+    plain: 안쪽 면은 그리지 않는 규칙
+    review: false
+  - term: transform
+    plain: 천을 옮기고 돌려서 대기
+    review: false
+  - term: coordinate system
+    plain: 재단대의 기준 눈금
+    review: false
+  - term: UV
+    plain: 원단의 결 방향 표시
+    review: false
+  - term: collision
+    plain: 천이 몸을 뚫고 들어감
+    review: false
+  - term: grading
+    plain: 사이즈 전개 (그레이딩)
+    note: 현업 용어 그대로 사용
+    review: false
+  - term: ease
+    plain: 여유분 (오그림 분량)
+    note: 두 봉제선 길이 차이를 오그려 맞추는 분량
+    review: false
+  - term: spline
+    plain: 곡자로 그린 부드러운 곡선
+    review: false
+  - term: polyline
+    plain: 짧은 직선을 이어 만든 선
+    review: false
+  - term: tolerance
+    plain: 허용 오차
+    review: false
+  - term: snapping
+    plain: 가까운 점에 억지로 붙이기
+    review: false
