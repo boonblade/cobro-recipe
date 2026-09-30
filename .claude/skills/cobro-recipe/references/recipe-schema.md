@@ -11,7 +11,7 @@
 | `title` | string | ● | "~하기" 형태 권장 (예: 패턴 두 장을 봉제하기) |
 | `domain` | string[] | ● | 검색용 태그 (oracle, batch, three.js, seam …) |
 | `pack` | string | – | 도메인 팩 id. 생략 시 `general` ([domain-packs.md](domain-packs.md)) |
-| `render.style` | enum | – | `clean`(기본, 스크롤형) / `sketch`(손그림 모션) |
+| `lesson` | string | – | 마지막 장면에서 크게 써지는 한 줄 교훈. 없으면 제목을 쓴다 |
 | `gate` | `{score, signals}` | ● | Gate 판정 결과. score ≥ 4 |
 | `status` | enum | ● | `draft` → `review` → `published`. 형식 시연용은 `sample` |
 | `as_of` | `{commit?, date}` | ● | 이 레시피가 유효한 코드 기준점 |

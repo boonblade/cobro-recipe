@@ -1,6 +1,6 @@
 ---
 name: cobro-recipe
-description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발견→해결 과정의 레시피(recipe.yaml + 스크롤형 HTML)로 남기고, 쌓인 레시피를 검색한다. 사용자가 /cobro-recipe, "레시피로 남겨", "레시피화", "이 문제 정리해서 남겨", "전에 이런 문제 있었나" 라고 할 때 사용한다. 여러 번 시도한 끝에 까다로운 버그·설계 문제를 해결한 직후에는 Gate 점수를 계산해 레시피로 남길지 제안만 한다(자동 작성 금지). 범용 — 업무 영역과 무관하며, 다른 스킬·외부 라이브러리에 의존하지 않는다.
+description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발견→해결 과정의 레시피(recipe.yaml + 손그림 모션 HTML)로 남기고, 쌓인 레시피를 검색한다. 사용자가 /cobro-recipe, "레시피로 남겨", "레시피화", "이 문제 정리해서 남겨", "전에 이런 문제 있었나" 라고 할 때 사용한다. 여러 번 시도한 끝에 까다로운 버그·설계 문제를 해결한 직후에는 Gate 점수를 계산해 레시피로 남길지 제안만 한다(자동 작성 금지). 범용 — 업무 영역과 무관하며, 다른 스킬·외부 라이브러리에 의존하지 않는다.
 ---
 
 # cobro-recipe
@@ -48,10 +48,10 @@ description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발
 2. **Gate**: `references/gate-criteria.md`로 신호를 고르고 점수를 계산한다(근거 있는 신호만).
 3. **작성**: `templates/recipe.template.yaml`을 복사해 채운다. scene 순서·타입은 `references/scene-types.md`, 쉬운 말은 `references/plain-language-guide.md`와 팩 사전(`recipes/pack.yaml` → `packs/general.yaml`)을 따른다. 새 비유는 로컬 팩 `terms`에 추가한다. 검색용 `search.symptoms`(현업이 말하는 증상)·`errors`(실제 에러 문구)를 채운다. **YAML 주의**: `#`, `? `, `: `, `[ ] { } ,`가 든 문자열과 에러 문구는 큰따옴표로 감싸고, 여러 줄은 `|`를 쓴다.
 4. **검사**: `validate.py recipes/<폴더>/recipe.yaml` — 오류 0이 될 때까지 고친다. 경고는 판단해서 고친다.
-5. **렌더**: `render.py recipes/<폴더>/recipe.yaml [--repo-url <저장소 URL>]`
+5. **렌더**: `render.py recipes/<폴더>/recipe.yaml [--repo-url <저장소 URL>]` — 손그림 모션 HTML 한 가지. 장면 배치·시간표·카메라는 엔진이 자동으로 정하므로 AI가 HTML을 쓰지 않는다. 마지막에 크게 써지는 한 줄 교훈은 `lesson`에 적는다(없으면 제목).
 6. **인덱스**: `build_index.py recipes`
 7. 사용자에게 결과를 3줄로 보고한다: 제목·Gate 점수, 파일 경로, 검토가 필요한 부분(`review: false` 비유, 근거가 약한 scene).
 
-## 그림 부품 (`visual.kind`)
+## 그림 부품 (`visual.kind`) — 모두 연필 선으로 그려진다
 
 `compare-grid`(조건별 성공/실패) · `table`(매트릭스) · `code-diff`(`snippet` 또는 `before`/`after`) · `diagram`(`type: flow`=단계 흐름 `spec.steps`, `pair`=짝 연결 `spec.left/right/pairs`, `before-after`=`spec.before/after`) · `image`(`src`,`alt`) · `svg`(부품으로 안 될 때만). 모두 `caption`(선택)을 가질 수 있다.
