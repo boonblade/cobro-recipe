@@ -293,7 +293,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 |---|---|---|---|
 | **P0** 설계 확정 (산출물 완료, 현업 리뷰 대기) | 1주 | 스키마·Gate·Scene 타입·도메인 팩 확정, **샘플 레시피 1건 수작업** (봉제선 벌어짐) | 해당 팩 리뷰어 1인 리뷰 통과 |
 | **P1** MVP ✅ | 2주 | SKILL.md, references, `scrolly.html` 템플릿, `render.py`/`validate.py`, write/render 모드 | 기존 이력으로 레시피 생성 — **1차 검증: cobro-mcp에서 init + R-001 (Gate 6, 근거 커밋 5개·테스트 49/49)**. 도메인별 추가 검증은 이어서 |
-| **P2** 캡처·팩·검색 | 2주 | capture 모드(inbox), 자동 제안, **팩 자동 추출(init)**, 내장 그림 부품, `INDEX.json`·search | 신규 프로젝트 1곳에서 init → 실시간 캡처 2건 → 검색으로 재발견 |
+| **P2** 캡처·팩·검색 | 2주 | capture 모드(inbox), 자동 제안(CLAUDE.md 블록 ✅ · 선택형 Stop 훅), **팩 자동 추출(init)**, 내장 그림 부품, `INDEX.json`·search | 신규 프로젝트 1곳에서 init → 실시간 캡처 2건 → 검색으로 재발견 |
 | **P3** 확장 | 2주~ | 디버깅 전 회상, Recipe Book 메인 페이지, 3D 임베드 | 기존 레시피 자동 회상 1건 |
 | **P4** 지식 기반 | 추후 | 여러 프로젝트 INDEX 통합, 의미 기반 검색 검토 | – |
 
@@ -341,6 +341,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 | D14 | 프로젝트 표시 | 로컬 팩 `project`(name·url)를 init이 채움 → 첫 화면 이름표·설명 카드·서명·인덱스·검색에 표시, url은 근거 링크 기본값 | 사용자 지정 |
 | D15 | 언어 | 레시피 하나 = 한 언어(`lang: ko\|en`). 결정 순서: 사용자 지정 → 팩 `lang` → 대화 언어. 화면 문구는 자동 전환, 번역본은 요청 시만. 영어 시작 팩 `general-en` | 사용자 지정 |
 | D16 | 번역본 | 요청 시만 `recipe.<lang>.yaml`→`recipe.<lang>.html`. 원본과 id·장면 구성·근거 일치 검사, 상호 언어 링크, 인덱스에서 한 줄로 묶음 | 사용자 승인 |
+| D17 | 자동 제안 | 설치만으로는 훅 없음(모델 판단). `init`이 승인 후 CLAUDE.md에 표시 블록 한 줄 추가(`claude_md.py`). 선택형 Stop 훅은 P2 | 사용자 승인 |
 | D13 | 출력 스타일 | **손그림(sketch) 단일**. clean(스크롤형) 폐기, `render.style` 필드 삭제, 한 줄 교훈 `lesson` 추가 | 사용자 지정 |
 
 ---

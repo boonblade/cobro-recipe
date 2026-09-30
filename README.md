@@ -37,7 +37,9 @@ Requires Python 3.8+ — standard library only; PyYAML is used if present.
 
    The skill samples the README, package metadata, folder layout and recent commits, then proposes a local domain pack (`recipes/pack.yaml`): project name and repository URL, language, whose everyday life to borrow metaphors from, and 10–20 key terms. Review it and approve.
 
-2. Solve a hard problem as usual. When several attempts were needed, the skill scores it (the **Gate**) and suggests — never forces — keeping it:
+   It also asks to add one line to your project's `CLAUDE.md` (a marked block; `claude_md.py --remove` takes it out). That line is what reminds Claude to check the Gate after a hard fix — installing the skill alone does not add any hook.
+
+2. Solve a hard problem as usual. When several attempts were needed, Claude scores it (the **Gate**) and suggests — never forces — keeping it:
 
    ```
    📒 Recipe candidate: Keeping drafts written in several tabs
@@ -66,7 +68,7 @@ Requires Python 3.8+ — standard library only; PyYAML is used if present.
 | `/cobro-recipe write [commit range]` | Write a recipe from git history and the session → validate → render → index |
 | `/cobro-recipe translate <R-###> <ko\|en>` | On request, write a translation next to the original (`recipe.<lang>.yaml` / `.html`) |
 | `/cobro-recipe search <symptom>` | Find similar recipes in `recipes/INDEX.json` |
-| (suggestion) | Right after a hard fix, suggests a recipe when the Gate score is 4 or more |
+| (suggestion) | Right after a hard fix, Claude suggests a recipe when the Gate score is 4 or more — prompted by the `CLAUDE.md` line from `init`. It is the model's call, not a hook; an optional Stop hook is planned (P2) |
 
 A recipe is built from eight scene types — 🚩 problem, 🔍 observe, 🧪 attempt, ❌ fail, 🧠 discovery, 🛠 solution, ⚠️ edge case, ✅ verify. Problem, observe, attempt, discovery, solution and verify are always there; a fail scene is required whenever an attempt didn't work, and edge case is optional. Failed attempts are kept on purpose: why something didn't work is usually the most valuable part.
 
@@ -94,7 +96,7 @@ Scene layout, timing and camera are computed from the recipe by the template —
 | Path | Contents |
 |---|---|
 | [`.claude/skills/cobro-recipe/SKILL.md`](.claude/skills/cobro-recipe/SKILL.md) | The skill: principles, commands, steps |
-| [`scripts/`](.claude/skills/cobro-recipe/scripts/) | `validate.py` · `render.py` · `build_index.py` · `search.py` · `recipe_io.py` (built-in YAML parser) |
+| [`scripts/`](.claude/skills/cobro-recipe/scripts/) | `validate.py` · `render.py` · `build_index.py` · `search.py` · `claude_md.py` (CLAUDE.md block) · `recipe_io.py` (built-in YAML parser) |
 | [`templates/`](.claude/skills/cobro-recipe/templates/) | `sketch.html` (hand-drawn engine) · `recipe.template.yaml` |
 | [`references/`](.claude/skills/cobro-recipe/references/) | Gate criteria · scene types · plain-language guide · schema · domain packs |
 | [`packs/`](.claude/skills/cobro-recipe/packs/) | Built-in packs: `general` (Korean, default) · `general-en` · `garment-3d` |
@@ -104,7 +106,7 @@ Scene layout, timing and camera are computed from the recipe by the template —
 
 ## Status
 
-P1 is done: skill, scripts, hand-drawn renderer, translations, and a real-project run on cobro-mcp. Next (P2): capturing attempts while you work, settling the automatic suggestion, a portrait layout for phones, and more recipes to validate across domains. See [docs/PLAN.md](docs/PLAN.md).
+P1 is done: skill, scripts, hand-drawn renderer, translations, and a real-project run on cobro-mcp. Next (P2): capturing attempts while you work, an optional Stop hook for more reliable suggestions, a portrait layout for phones, and more recipes to validate across domains. See [docs/PLAN.md](docs/PLAN.md).
 
 ## License
 

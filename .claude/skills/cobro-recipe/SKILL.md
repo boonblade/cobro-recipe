@@ -28,7 +28,7 @@ description: "Record a hard-won fix as a recipe (problem, attempts, failures, di
 | 명령 | 할 일 | 읽을 참조 |
 |---|---|---|
 | `init` | 도메인 팩 추출 → 사용자 확인 → `recipes/pack.yaml` 저장 | `references/domain-packs.md` §5, `packs/general.yaml` |
-| (자동 제안) | 해결 직후 Gate 계산 → 4점 이상이면 제안 메시지 1회 | `references/gate-criteria.md` |
+| (자동 제안) | 해결 직후 Gate 계산 → 4점 이상이면 제안 메시지 1회. `init`이 넣은 CLAUDE.md 블록이 이를 상기시킨다 | `references/gate-criteria.md` |
 | `write [커밋 범위]` | 레시피 작성 → 검사 → 렌더 → 인덱스 | 아래 "write 절차" |
 | `render <recipe.yaml>` | `render.py` 실행 | – |
 | `index` | `build_index.py recipes` | – |
@@ -43,6 +43,7 @@ description: "Record a hard-won fix as a recipe (problem, attempts, failures, di
 2. **샘플링만** 한다: README 앞부분, 최상위 디렉터리 구조, 설정 파일(package.json 등)의 이름·설명, `git log --format=%s -50`, 도메인 용어가 많은 파일명. 파일 전체를 읽지 않는다.
 3. `packs/general.yaml` 구조를 따라 `project`(`name`: package.json 이름 또는 저장소 이름, `url`: `git remote get-url origin`을 https로), `lang`(아래 "언어"), `id`, `name`, `description`, `metaphor_source`, `business_readers`, `reviewer`, `domain_knowledge_examples`, `sketch`, `terms`(10~20개, `review: false`)를 채운다.
 4. 요약을 보여 주고 승인·수정을 받은 뒤 저장한다.
+5. **자동 제안 장치**: 스킬 설명만으로는 해결 직후 제안을 잊을 수 있다. 사용자에게 프로젝트 `CLAUDE.md`에 한 줄 블록을 넣을지 묻고, 승인하면 `claude_md.py --lang <팩 lang>`을 실행한다(여러 번 실행해도 한 번만 들어가고, `--remove`로 뺀다). `recipes/_inbox/`를 `.gitignore`에 넣는 것도 같이 묻는다.
 
 ## 언어
 
