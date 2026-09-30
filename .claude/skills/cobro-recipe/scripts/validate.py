@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from recipe_io import load_yaml, skill_dir  # noqa: E402
+from recipe_io import find_pack, load_yaml  # noqa: E402
 
 TYPES = ["problem", "observe", "attempt", "fail", "discovery", "solution", "edge", "verify"]
 REQUIRED_TYPES = ["problem", "observe", "attempt", "discovery", "solution", "verify"]
@@ -30,21 +30,9 @@ KINDS = {
 }
 DIAGRAM_TYPES = ["flow", "pair", "before-after"]
 SIGNAL_POINTS = {"S1": 2, "S2": 2, "S3": 2, "S4": 1, "S5": 1, "S6": 1, "S7": 1}
-TOP_KEYS = {"id", "slug", "title", "domain", "pack", "render", "gate", "status", "as_of", "audience",
-            "summary", "scenes", "related", "search", "reconstructed"}
+TOP_KEYS = {"id", "slug", "title", "domain", "pack", "gate", "status", "as_of", "audience",
+            "summary", "lesson", "scenes", "related", "search", "reconstructed"}
 SHA = re.compile(r"^[0-9a-f]{7,40}$")
-
-
-def find_pack(recipe_path: Path, pack_id: str | None) -> Path | None:
-    """로컬 팩(recipes/pack.yaml) → 내장 팩(packs/<id>.yaml) 순으로 찾는다"""
-    for parent in recipe_path.resolve().parents:
-        local = parent / "pack.yaml"
-        if local.exists():
-            return local
-        if parent.name == "recipes":
-            break
-    builtin = skill_dir() / "packs" / f"{pack_id or 'general'}.yaml"
-    return builtin if builtin.exists() else None
 
 
 def check(path: Path) -> tuple[list[str], list[str]]:
@@ -73,9 +61,8 @@ def check(path: Path) -> tuple[list[str], list[str]]:
     for a in r["audience"]:
         if a not in AUDIENCE:
             E.append(f"audience 값 오류: {a} (허용: {', '.join(AUDIENCE)})")
-    style = (r.get("render") or {}).get("style", "clean")
-    if style not in ("clean", "sketch"):
-        E.append(f"render.style 값 오류: {style}")
+    if "lesson" in r and not isinstance(r["lesson"], str):
+        E.append("lesson은 한 줄 문자열이어야 한다")
 
     g = r["gate"] or {}
     sig = g.get("signals") or []
