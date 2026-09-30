@@ -52,6 +52,9 @@ body[data-read="tech"] .caption .p{display:none}
 .controls input[type=range]{flex:1;min-width:60px;accent-color:var(--accent)}
 .controls .time{font:12px ui-monospace,Menlo,monospace;color:var(--muted);min-width:84px;text-align:right}
 .grp{display:inline-flex;gap:4px}
+.grp[hidden]{display:none}
+.grp.lang a{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.grp.lang a:hover{border-color:var(--accent);color:var(--accent)}
 .spdwrap{position:relative;display:inline-flex}
 .menu{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);z-index:20;min-width:132px;background:var(--chrome);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 10px 30px rgba(40,30,20,.18)}
 .menu[hidden]{display:none}
@@ -111,6 +114,7 @@ body[data-nav="scroll"] .spacer{height:1200vh}
     <button data-nav="play" aria-pressed="true" data-i18n="play">재생</button>
     <button data-nav="scroll" aria-pressed="false" data-i18n="scroll">스크롤</button>
   </span>
+  <span class="grp lang" id="langs" hidden></span>
   <span class="grp read" role="group" data-i18n-aria="readMode">
     <button data-read="plain" aria-pressed="false" data-i18n="plain">쉬운</button>
     <button data-read="both" aria-pressed="true" data-i18n="both">둘 다</button>
@@ -154,10 +158,18 @@ const NAME = L.types;
 document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = L[el.dataset.i18n] ?? el.textContent; });
 document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', L[el.dataset.i18nAria]));
 document.querySelectorAll('[data-i18n-title]').forEach(el => el.setAttribute('title', L[el.dataset.i18nTitle]));
+// 다른 언어본 링크 (render.py가 같은 폴더의 recipe.<lang>.yaml을 찾아 넣는다)
+(function(){
+  const box = document.getElementById('langs'), alts = R.alternates || [];
+  alts.forEach(a => { const el = document.createElement('a'); el.href = a.href; el.lang = a.lang; el.hreflang = a.lang; el.textContent = a.name; box.appendChild(el); });
+  box.hidden = !alts.length;
+})();
 const FONT = '"Gaegu","Nanum Pen Script","Comic Sans MS",cursive';
 const MONO = '"D2Coding","Consolas",ui-monospace,Menlo,monospace';
 const PENCIL = { width: 4, jitter: 1.7, step: 9, boilFps: 12, overlayAlpha: 0.45 };
-const RATE = 12;                                   // 손글씨: 1초에 12칸
+// 손글씨 속도·읽는 시간: 같은 내용이라도 영어는 글자 수가 많아 칸 기준 속도를 높인다
+const RATE = R.lang === 'en' ? 20 : 12;             // 1초에 쓰는 칸
+const READ_CPS = R.lang === 'en' ? 24 : 14;        // 설명 카드 읽는 속도(칸/초)
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
 /* =====================================================================
@@ -569,7 +581,7 @@ function build(){
     const hop = [t, t + .9], lt = hop[1];
     const ld = .35 + linesDur(s.L) + .45;
     const pt = lt + Math.max(.6, ld * .7);
-    const hold = Math.max(2, Math.min(5.5, [...String(s.sc.plain || '')].length / 14));
+    const hold = Math.max(2, Math.min(5.5, [...String(s.sc.plain || '')].length / READ_CPS));
     const end = Math.max(pt + s.part.dur, lt + ld) + hold;
     Object.assign(s, { hop, lt, ld, pt, end });
     t = end;
