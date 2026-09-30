@@ -68,7 +68,7 @@ Requires Python 3.8+ — standard library only; PyYAML is used if present.
 | `/cobro-recipe search <symptom>` | Find similar recipes in `recipes/INDEX.json` |
 | (suggestion) | Right after a hard fix, suggests a recipe when the Gate score is 4 or more |
 
-A recipe has eight kinds of scenes — 🚩 problem, 🔍 observe, 🧪 attempt, ❌ fail, 🧠 discovery, 🛠 solution, ⚠️ edge case, ✅ verify. Failed attempts are never dropped: why something didn't work is usually the most valuable part.
+A recipe is built from eight scene types — 🚩 problem, 🔍 observe, 🧪 attempt, ❌ fail, 🧠 discovery, 🛠 solution, ⚠️ edge case, ✅ verify. Problem, observe, attempt, discovery, solution and verify are always there; a fail scene is required whenever an attempt didn't work, and edge case is optional. Failed attempts are kept on purpose: why something didn't work is usually the most valuable part.
 
 ## Output
 
