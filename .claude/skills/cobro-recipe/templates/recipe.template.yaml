@@ -8,8 +8,6 @@ slug: short-kebab-title
 title: ~하기
 domain: []
 pack: general       # packs/<id>.yaml — 생략 시 general
-render:
-  style: clean      # clean | sketch
 gate:
   score: 0          # 4 이상
   signals: []       # S1 ~ S7
@@ -22,6 +20,7 @@ summary:
   plain:
   tech:
 reconstructed: false
+lesson:             # 선택 — 마지막에 크게 써지는 한 줄 교훈 (없으면 제목)
 
 scenes:
   - id: s01

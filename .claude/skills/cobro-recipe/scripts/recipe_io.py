@@ -10,11 +10,23 @@ import json
 import re
 from pathlib import Path
 
-__all__ = ["load_yaml", "load_yaml_text", "skill_dir"]
+__all__ = ["load_yaml", "load_yaml_text", "skill_dir", "find_pack"]
 
 
 def skill_dir() -> Path:
     return Path(__file__).resolve().parent.parent
+
+
+def find_pack(recipe_path: str | Path, pack_id: str | None = None) -> Path | None:
+    """로컬 팩(recipes/pack.yaml) → 내장 팩(packs/<id>.yaml) 순으로 찾는다"""
+    for parent in Path(recipe_path).resolve().parents:
+        local = parent / "pack.yaml"
+        if local.exists():
+            return local
+        if parent.name == "recipes":
+            break
+    builtin = skill_dir() / "packs" / f"{pack_id or 'general'}.yaml"
+    return builtin if builtin.exists() else None
 
 
 def load_yaml(path: str | Path):
