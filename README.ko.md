@@ -37,7 +37,9 @@ Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴
 
    스킬이 README, 패키지 정보, 폴더 구조, 최근 커밋을 훑어보고 로컬 도메인 팩(`recipes/pack.yaml`)을 제안한다: 프로젝트 이름과 저장소 주소, 언어, 비유를 가져올 곳, 주요 용어 10~20개. 확인하고 승인한다.
 
-2. 평소처럼 문제를 푼다. 여러 번 시도해야 했던 문제면 스킬이 점수(**Gate**)를 매겨 남길지 제안한다 — 강제하지 않는다:
+   프로젝트 `CLAUDE.md`에 한 줄을 넣을지도 묻는다(표시 주석으로 감싼 블록, `claude_md.py --remove`로 뺀다). 해결 직후 Claude가 Gate를 확인하게 상기시키는 것이 이 한 줄이다 — 스킬을 설치하는 것만으로는 훅이 생기지 않는다.
+
+2. 평소처럼 문제를 푼다. 여러 번 시도해야 했던 문제면 Claude가 점수(**Gate**)를 매겨 남길지 제안한다 — 강제하지 않는다:
 
    ```
    📒 레시피 후보: 여러 탭에서 쓴 초안 지키기
@@ -66,7 +68,7 @@ Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴
 | `/cobro-recipe write [커밋 범위]` | git 이력·세션으로 레시피 작성 → 검사 → 렌더 → 인덱스 |
 | `/cobro-recipe translate <R-###> <ko\|en>` | 요청할 때만 원본 옆에 번역본 작성 (`recipe.<lang>.yaml` / `.html`) |
 | `/cobro-recipe search <증상>` | `recipes/INDEX.json`에서 비슷한 레시피 찾기 |
-| (자동 제안) | 까다로운 문제를 해결한 직후 Gate 4점 이상이면 레시피화를 제안 |
+| (자동 제안) | 까다로운 문제를 해결한 직후 Gate 4점 이상이면 Claude가 레시피화를 제안 — `init`이 넣은 `CLAUDE.md` 한 줄이 상기시킨다. 훅이 아니라 모델의 판단이며, 선택형 Stop 훅은 P2 예정 |
 
 레시피는 여덟 가지 장면으로 짠다 — 🚩 문제, 🔍 관찰, 🧪 시도, ❌ 실패, 🧠 발견, 🛠 해결, ⚠️ Edge Case, ✅ 검증. 문제·관찰·시도·발견·해결·검증은 항상 들어가고, 실패는 안 된 시도가 있으면 반드시, Edge Case는 필요할 때만 넣는다. 실패한 시도는 일부러 남긴다. "왜 그 방법은 안 됐나"가 대개 가장 값진 부분이다.
 
@@ -94,7 +96,7 @@ Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴
 | 경로 | 내용 |
 |---|---|
 | [`.claude/skills/cobro-recipe/SKILL.md`](.claude/skills/cobro-recipe/SKILL.md) | 스킬 본체: 원칙, 명령, 절차 |
-| [`scripts/`](.claude/skills/cobro-recipe/scripts/) | `validate.py` · `render.py` · `build_index.py` · `search.py` · `recipe_io.py`(내장 YAML 파서) |
+| [`scripts/`](.claude/skills/cobro-recipe/scripts/) | `validate.py` · `render.py` · `build_index.py` · `search.py` · `claude_md.py`(CLAUDE.md 블록) · `recipe_io.py`(내장 YAML 파서) |
 | [`templates/`](.claude/skills/cobro-recipe/templates/) | `sketch.html`(손그림 엔진) · `recipe.template.yaml` |
 | [`references/`](.claude/skills/cobro-recipe/references/) | Gate 기준 · Scene 타입 · 쉬운 설명 가이드 · 스키마 · 도메인 팩 |
 | [`packs/`](.claude/skills/cobro-recipe/packs/) | 내장 팩: `general`(한국어, 기본) · `general-en` · `garment-3d` |
@@ -104,7 +106,7 @@ Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴
 
 ## 진행 상황
 
-P1 완료: 스킬, 스크립트, 손그림 렌더러, 번역본, cobro-mcp 실전 적용. 다음(P2): 작업 중 시도 기록(capture), 자동 제안 정착, 휴대폰 세로 화면 배치, 여러 영역에서 레시피 추가 검증. [docs/PLAN.md](docs/PLAN.md) 참고.
+P1 완료: 스킬, 스크립트, 손그림 렌더러, 번역본, cobro-mcp 실전 적용. 다음(P2): 작업 중 시도 기록(capture), 더 확실한 제안을 위한 선택형 Stop 훅, 휴대폰 세로 화면 배치, 여러 영역에서 레시피 추가 검증. [docs/PLAN.md](docs/PLAN.md) 참고.
 
 ## 라이선스
 
