@@ -60,3 +60,4 @@ JSON Schema로 표현하기 어려운 규칙:
 6. `plain`에 영문 기술 용어(팩 사전의 `term`)가 들어가면 경고.
 7. `status ≥ review`인데 evidence가 비었거나 `note`만 있으면 오류.
 8. `pack`에 해당하는 `packs/<pack>.yaml`이 있어야 한다.
+9. `gate.signals`에 S1이 있는데 `fail` scene이 없으면 경고 (시도가 여러 번이면 적어도 한 번은 실패했다).
