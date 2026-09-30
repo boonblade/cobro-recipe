@@ -17,7 +17,7 @@
 2. 하나의 설명을 **2층 구조(쉬운 비유 + 기술 설명)**로 작성 — 패턴실·MD 등 비개발자와 개발자가 같은 문서를 공유.
 3. `diagram-design`은 "그림 그리는 Skill", `cobro-recipe`는 "무엇을 언제 보여줄지 정하는 연출 Skill" — 역할 분리로 충돌 없음.
 4. 모든 서술은 **커밋·파일 근거(evidence) 필수** — AI가 시도 이력을 지어내는 것 차단.
-5. 누적 결과물은 **Garment 3D Engineering Recipe Book** = 사내 3D 패턴 기술 노하우 DB.
+5. 누적 결과물은 **cobro-recipe Book** = 사내 3D 패턴 기술 노하우 DB.
 
 ---
 
@@ -282,7 +282,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 
 - **개발**: 재발 문제 즉시 참조 → 디버깅 시간 단축, 신규 인력 온보딩 자료로 활용
 - **현업(패턴실·MD)**: "왜 곡선 봉제선은 아직 안 되는지" 등 기술 제약을 직접 이해 → 요구사항 조율 비용 감소
-- **회사**: 3D 패턴 디지털화 노하우의 사내 자산화 (Garment 3D Engineering Recipe Book)
+- **회사**: 3D 패턴 디지털화 노하우의 사내 자산화 (cobro-recipe Book)
 
 ---
 
@@ -317,7 +317,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 ## 부록 B. 목표 Recipe Book 목차 (예시)
 
 ```
-👗 Garment 3D Engineering Recipes
+👗 cobro-recipe
 01. DXF를 3D 패턴으로 바꾸기
 02. 패턴 좌표계를 Three.js로 변환하기
 03. 패턴 두 장을 봉제하기
