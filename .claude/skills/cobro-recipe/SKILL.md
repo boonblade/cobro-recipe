@@ -1,7 +1,7 @@
 ---
 name: cobro-recipe
 license: MIT (LICENSE)
-description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발견→해결 과정의 레시피(recipe.yaml + 손그림 모션 HTML)로 남기고, 쌓인 레시피를 검색한다. 사용자가 /cobro-recipe, "레시피로 남겨", "레시피화", "이 문제 정리해서 남겨", "전에 이런 문제 있었나" 라고 할 때 사용한다. 여러 번 시도한 끝에 까다로운 버그·설계 문제를 해결한 직후에는 Gate 점수를 계산해 레시피로 남길지 제안만 한다(자동 작성 금지). 범용 — 업무 영역과 무관하며, 다른 스킬·외부 라이브러리에 의존하지 않는다.
+description: "Record a hard-won fix as a recipe (problem, attempts, failures, discovery, solution) in recipe.yaml plus a hand-drawn animated HTML, with plain-language and technical explanations backed by commit and test evidence, and search past recipes. Use when the user runs /cobro-recipe or says \"save this as a recipe\", \"write this up as a recipe\", \"have we seen this before\", \"레시피로 남겨\", \"레시피화\", \"이 문제 정리해서 남겨\", \"전에 이런 문제 있었나\". Right after solving a tricky bug or design problem through several attempts, compute the Gate score and only suggest a recipe; never write one unasked. General-purpose for any domain, Korean or English; depends on no other skill or external library. / 개발 중 다시 만날 문제의 해결 과정을 쉬운 설명·기술 설명·근거가 붙은 손그림 레시피로 남기고 검색한다."
 ---
 
 # cobro-recipe

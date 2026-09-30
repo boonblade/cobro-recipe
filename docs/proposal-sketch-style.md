@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 |---|---|
 | 상태 | **채택 — 유일한 출력 스타일** (D13). 엔진: `templates/sketch.html`, 생성: `scripts/render.py` |
-| 목업 | [R-001 수작업 목업](../.claude/skills/cobro-recipe/examples/R-001-seam-stitching/mockup.html) · 자동 생성 실례: [cobro-mcp R-001](../examples/cobro-mcp/recipes/R-001-cross-tab-drafts/recipe.html) |
+| 목업 | [R-001 수작업 목업](../examples/garment-3d-seam/mockup.html) · 자동 생성 실례: [cobro-mcp R-001](../examples/cobro-mcp/recipes/R-001-cross-tab-drafts/recipe.html) |
 | 참고 | 외부 공개 프롬프트 "아이스 아메리카노 손그림 모션그래픽 명세서" |
 
 ## 결론
