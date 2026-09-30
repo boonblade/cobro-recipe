@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """recipe.yaml → recipe.html (손그림 스타일) — 표준 라이브러리만 사용, AI 토큰 없이 결정적으로 생성.
 
-사용: python3 render.py <recipe.yaml> [-o out.html] [--repo-url https://github.com/org/repo]
+사용: python3 render.py <recipe.yaml | recipe.<lang>.yaml> [-o out.html] [--repo-url https://github.com/org/repo]
   근거(commit·file)는 저장소 링크가 된다 — 주소는 --repo-url, 없으면 팩의 project.url.
   언어는 recipe.lang → 팩 lang → ko 순으로 정한다 (화면 문구 ko/en).
 템플릿(templates/sketch.html)이 장면 배치·시간표·카메라를 레시피 내용에서 자동 계산하고,
@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from recipe_io import find_pack, load_yaml, skill_dir  # noqa: E402
+from recipe_io import LANG_NAME, find_pack, load_yaml, skill_dir, variant_lang, variants  # noqa: E402
 
 TEXT = {
     "ko": {
@@ -99,11 +99,19 @@ def render(r: dict, src: Path, repo: str | None) -> str:
                       tx["gate"].format((r.get("gate") or {}).get("score"))] + ([tx["recon"]] if r.get("reconstructed") else []))
     sm = r.get("summary") or {}
     sk = pack.get("sketch") or {}
+    # 같은 폴더의 다른 언어본 — 서로 링크 (recipe.yaml ↔ recipe.en.yaml)
+    alternates = []
+    for vp in variants(src.parent):
+        if vp.resolve() == src.resolve():
+            continue
+        vlang = variant_lang(vp) or (load_yaml(vp).get("lang") or pack.get("lang") or "ko")
+        alternates.append({"lang": vlang, "name": LANG_NAME.get(vlang, vlang), "href": vp.with_suffix(".html").name})
     data = {
         "id": r["id"], "title": r["title"], "subtitle": sub, "lesson": r.get("lesson") or "", "lang": lang,
         "project": {"name": project.get("name"), "url": project.get("url")} if project.get("name") else None,
         "summary": {"plain": str(sm.get("plain", "")).strip(), "tech": str(sm.get("tech", "")).strip()},
         "theme": {k: sk[k] for k in ("protagonist", "trail", "doodles") if k in sk}, "scenes": scenes,
+        "alternates": alternates,
     }
     tpl = (skill_dir() / "templates" / "sketch.html").read_text(encoding="utf-8")
     title_text = " · ".join(x for x in (project.get("name"), f'{r["id"]} {r["title"]}') if x)
@@ -124,7 +132,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--repo-url", help="생략하면 팩의 project.url 사용")
     a = ap.parse_args(argv)
     src = Path(a.recipe)
-    out = Path(a.out) if a.out else src.with_name("recipe.html")
+    out = Path(a.out) if a.out else src.with_suffix(".html")   # recipe.yaml → recipe.html, recipe.en.yaml → recipe.en.html
     out.write_text(render(load_yaml(src), src, a.repo_url.rstrip("/") if a.repo_url else None), encoding="utf-8")
     print(f"✓ {out}  ({out.stat().st_size / 1024:.1f} KB)")
     return 0

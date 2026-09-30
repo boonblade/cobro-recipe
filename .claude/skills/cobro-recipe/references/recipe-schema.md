@@ -23,6 +23,12 @@
 | `search` | `{symptoms, errors, keywords}` | – | 검색용. 현업이 말하는 증상, 실제 에러 문구, 추가 키워드 (INDEX.json에 들어감) |
 | `reconstructed` | bool | ● | 개발 중 캡처가 아니라 사후에 이력으로 재구성했으면 `true` |
 
+## 1-1. 번역본
+
+- 파일: 원본 `recipe.yaml` 옆에 `recipe.<lang>.yaml` (예: `recipe.en.yaml`) → 렌더하면 `recipe.<lang>.html`.
+- `lang`은 파일명과 같아야 하고, 원본과 `id`·scene `type` 순서가 같아야 한다(오류). 근거(commit/file/lines/test/log)와 `gate`가 다르면 경고.
+- `build_index.py`는 번역본을 원본 한 줄의 `translations`로 묶는다.
+
 ## 2. scene 필드
 
 | 필드 | 필수 | 설명 |

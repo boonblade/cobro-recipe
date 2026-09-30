@@ -12,13 +12,15 @@ import sys
 from pathlib import Path
 
 WEIGHTS = [("errors", 4), ("symptoms", 3), ("title", 3), ("keywords", 2), ("domain", 2),
-           ("plain", 1), ("tech", 1), ("scene_titles", 1)]
+           ("plain", 1), ("tech", 1), ("scene_titles", 1), ("translations", 2)]
 
 
 def score(item: dict, terms: list[str]) -> tuple[int, list[str]]:
     total, hits = 0, []
     for field, w in WEIGHTS:
         v = item.get(field)
+        if field == "translations":
+            v = [" ".join([t.get("title", ""), t.get("plain", ""), *t.get("symptoms", [])]) for t in v or []]
         text = " ".join(map(str, v)) if isinstance(v, list) else str(v or "")
         low = text.lower()
         for t in terms:
@@ -47,7 +49,8 @@ def main(argv: list[str]) -> int:
         return 1
     for (sc, hits), x in ranked:
         proj = f"[{x['project']}] " if x.get("project") else ""
-        print(f"{x['id']}  점수 {sc}  {proj}{x['title']}  → {x['html'] or x['yaml']}")
+        tr = "".join(f"  [{t['lang']}] {t['html'] or t['yaml']}" for t in x.get("translations") or [])
+        print(f"{x['id']}  점수 {sc}  {proj}{x['title']}  → {x['html'] or x['yaml']}{tr}")
         print(f"      {x['plain'][:90]}")
         print(f"      일치: {', '.join(dict.fromkeys(hits))}")
     return 0

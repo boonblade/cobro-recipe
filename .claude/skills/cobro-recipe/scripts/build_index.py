@@ -11,14 +11,14 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from recipe_io import find_pack, load_yaml  # noqa: E402
+from recipe_io import find_pack, load_yaml, variant_lang, variants  # noqa: E402
 
 
 def entry(path: Path, root: Path) -> dict:
     r = load_yaml(path)
     s = r.get("search") or {}
     sm = r.get("summary") or {}
-    html = path.with_name("recipe.html")
+    html = path.with_suffix(".html")
     pk = find_pack(path, r.get("pack"))
     pack = load_yaml(pk) if pk else {}
     return {
@@ -36,20 +36,28 @@ def entry(path: Path, root: Path) -> dict:
 
 def main(argv: list[str]) -> int:
     root = Path(argv[0] if argv else "recipes")
-    files = sorted(p for p in root.glob("*/recipe.yaml"))
     items, bad = [], []
-    for f in files:
+    for folder in sorted(p.parent for p in root.glob("*/recipe.yaml")):
         try:
-            items.append(entry(f, root))
+            vs = variants(folder)
+            it = entry(vs[0], root)
+            # 번역본은 원본 한 줄에 묶는다 — 검색은 번역본 문구로도 걸린다
+            it["translations"] = []
+            for vp in vs[1:]:
+                tr = entry(vp, root)
+                it["translations"].append({"lang": variant_lang(vp), "title": tr["title"], "plain": tr["plain"],
+                                           "symptoms": tr["symptoms"], "html": tr["html"], "yaml": tr["yaml"]})
+            items.append(it)
         except Exception as ex:  # noqa: BLE001
-            bad.append(f"{f}: {ex}")
+            bad.append(f"{folder}: {ex}")
     items.sort(key=lambda x: str(x["id"]))
     (root / "INDEX.json").write_text(json.dumps({"version": 1, "recipes": items}, ensure_ascii=False, indent=1), encoding="utf-8")
     proj = next((x["project"] for x in items if x.get("project")), None)
     lines = [f"# Recipe Book{' — ' + proj if proj else ''}", "", "| ID | 제목 | 언어 | 상태 | Gate | 태그 |", "|---|---|---|---|---|---|"]
     for x in items:
         link = f"[{x['title']}]({x['html'] or x['yaml']})"
-        lines.append(f"| {x['id']} | {link} | {x['lang']} | {x['status']} | {x['gate']} | {', '.join(x['domain'])} |")
+        langs = " · ".join([x["lang"]] + [f"[{t['lang']}]({t['html'] or t['yaml']})" for t in x["translations"]])
+        lines.append(f"| {x['id']} | {link} | {langs} | {x['status']} | {x['gate']} | {', '.join(x['domain'])} |")
     (root / "INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"✓ {root / 'INDEX.json'} · {root / 'INDEX.md'}  (레시피 {len(items)}건)")
     for b in bad:

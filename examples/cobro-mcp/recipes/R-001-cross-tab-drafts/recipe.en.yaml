@@ -1,0 +1,176 @@
+# /cobro-recipe translate R-001 en — English version of recipe.yaml
+# Reconstructed from git history (no session transcript)
+
+id: R-001
+slug: cross-tab-drafts
+title: Keeping drafts written in several tabs
+domain: [overlay, core, multi-tab, draft, state]
+pack: cobro-mcp
+lang: en
+gate:
+  score: 6
+  signals: [S1, S2, S4, S7]
+status: review
+as_of:
+  commit: 5cc9d99
+  date: 2026-09-24
+audience: [dev, business]
+summary:
+  plain: A note written in one tab disappeared when you edited a note in another tab. We fixed it by letting each tab replace only its own page's notes, and by having the sending tab put the page label on its notes itself.
+  tech: Draft message handling moved from whole replacement to per-page replacement (R177); a new draft's page is now stamped from the sending tab instead of the global s.page, and ids being replaced are excluded from the kept list (Task 69 B1).
+reconstructed: true
+lesson: The tab that sends a note puts the label on it
+
+scenes:
+  - id: s01
+    type: problem
+    title: Writing in another tab wipes the first tab's note
+    plain: Two tabs, a note in each. As soon as the note in the second tab was edited, the note written in the first tab was gone.
+    tech: When two overlays (tabs) connected to the same session each send a draft message, one tab's message deletes the server draft created by the other tab.
+    visual:
+      kind: compare-grid
+      caption: Same session, two tabs on different pages
+      items:
+        - { label: ① Note in tab A, state: ok, note: saved }
+        - { label: ② Note in tab B, state: ok, note: saved }
+        - { label: ③ Look at tab A again, state: ng, note: gone }
+    evidence:
+      - { commit: fd91128, file: CHANGELOG.md, note: "Drafts made in one tab are no longer wiped when you edit a draft in another tab" }
+
+  - id: s02
+    type: observe
+    title: The draft message meant "replace everything"
+    plain: Each tab sent "every note I have", and the receiving side swapped out the whole note box with it. The second tab didn't know about the first tab's note, so it overwrote the box without it.
+    tech: The contract of OverlayMsg 'draft' was "replace everything with status draft", and SessionCore.setDrafts(batches) kept only non-draft batches and replaced all drafts at once.
+    visual:
+      kind: code-diff
+      lang: ts
+      caption: setDrafts before the fix — drop every draft, keep only what was received
+      snippet: |
+        setDrafts(batches: Batch[]): void {
+          const others = this.s.batches.filter((b) => b.status !== 'draft');
+          ...
+    evidence:
+      - { commit: dd6596f, file: src/core/session.ts, note: "code before the fix is at lines 34-35 of dd6596f's parent" }
+      - { commit: dd6596f, file: src/core/types.ts }
+
+  - id: s03
+    type: attempt
+    title: "Attempt 1: replace per page"
+    plain: Instead of swapping out the whole note box, only the notes of the sending tab's page get replaced. Each tab also sends only its own page's notes and merges the other tabs' notes into what it keeps.
+    tech: Added page (location.href) to the draft message; setDrafts(batches, pageUrl) replaces only drafts where samePage holds. The overlay's flushDraft sends only current-page drafts and merges incoming state in server order.
+    visual:
+      kind: code-diff
+      lang: ts
+      caption: Only drafts of the same page are replaced
+      before: |
+        const others = this.s.batches.filter((b) => b.status !== 'draft');
+      after: |
+        const others = this.s.batches.filter((b) => {
+          if (b.status !== 'draft') return true;
+          if (!pageUrl) return false;
+          return !!b.page && !samePage(b.page.url, pageUrl);
+        });
+    evidence:
+      - { commit: dd6596f, file: src/core/session.ts }
+      - { commit: fd91128, file: src/overlay/index.ts }
+      - { test: "test/core/session.test.ts › setDrafts replaces drafts per page when a pageUrl is given (R177)" }
+
+  - id: s04
+    type: fail
+    title: Open the tabs in another order and labels go wrong, notes double
+    plain: Review stopped it. Open the first tab, then the second, then write a new note in the first tab — the note got the second tab's page label, and on the next save the same note turned into two.
+    tech: New drafts were stamped with the server's global s.page (the tab that connected last), so labels went wrong. Resending the same id then left it in others (samePage mismatch) while also adding it to kept, duplicating it (review Task 69 B1).
+    visual:
+      kind: compare-grid
+      caption: Attempt 1 gives different results depending on connection order
+      items:
+        - { label: "A note → open B", state: ok, note: fixed by attempt 1 }
+        - { label: "open A → open B → new note in A", state: ng, note: label B · 2 notes }
+    evidence:
+      - { commit: 9af6e18, note: "Commit message: Task 69 B1 — stamp draft page with the sending tab's page, exclude replaced ids from the kept list" }
+      - { file: test/e2e/overlay.spec.ts, lines: "1281", commit: 9af6e18, note: "e2e changed to reproduce B1 (sequential tab switching)" }
+
+  - id: s05
+    type: discovery
+    title: There was only one whiteboard
+    plain: The problem wasn't how much of the box gets replaced, but not knowing which tab a note came from. The server kept a single shared whiteboard with only the last tab's name on it, and stuck that label on every new note.
+    tech: The root cause was missing sender context, not replacement scope. setDrafts took a new draft's page from the global s.page, so with several tabs the label depended on connection order — and a wrong label also broke the replacement check (samePage).
+    visual:
+      kind: diagram
+      type: before-after
+      caption: Who puts the label on
+      spec:
+        before_title: The shared whiteboard (s.page) labels notes
+        before: ["tab A connects → board: A", "tab B connects → board: B", "new note in tab A → label B ✗"]
+        after_title: The sending tab labels its notes
+        after: ["new note in tab A + 'I am page A'", "server: label A ✓", "ids received now are always replaced"]
+    evidence:
+      - { commit: 9af6e18, file: src/core/session.ts, lines: "57" }
+
+  - id: s06
+    type: solution
+    title: The sending tab puts the label on
+    plain: When a tab sends notes it includes its own page label, and the server puts exactly that label on new notes. Notes received in this message are always replaced regardless of their label, so nothing gets duplicated.
+    tech: The draft message's page became a {url, title} object; setDrafts(batches, page) stamps drafts it sees for the first time with the message's page. Ids in keptIds are always excluded from others. The bridge passes page only when page.url is a string (backward compatible).
+    visual:
+      kind: code-diff
+      lang: ts
+      caption: src/core/session.ts @ 9af6e18
+      snippet: |
+        const keptIds = new Set(kept.map((b) => b.id));
+        const others = this.s.batches.filter((b) => {
+          if (keptIds.has(b.id)) return false; // ids being replaced are always excluded
+          if (b.status !== 'draft') return true;
+          if (!page) return false;
+          return !!b.page && !samePage(b.page.url, page.url);
+        });
+        // a draft seen for the first time is stamped with the message's page (the sending tab)
+        const stamped = prev ? prev.page : (page ?? (this.s.page ? { ... } : undefined));
+    evidence:
+      - { commit: 9af6e18, file: src/core/session.ts, lines: "36-58" }
+      - { commit: 9af6e18, file: src/bridge.ts, lines: "37-38" }
+      - { commit: 9af6e18, file: src/core/types.ts, lines: "52" }
+
+  - id: s07
+    type: edge
+    title: Older tabs and the URL comparison rule
+    plain: If an older tab sends without page info, everything is replaced as before. URLs that differ only after # count as the same page.
+    tech: A draft message without page falls back to whole replacement (backward compatible); old drafts without page are treated as the same page. samePage compares only origin+pathname+search and ignores the hash (R163).
+    visual:
+      kind: table
+      columns: [Situation, Behavior]
+      rows:
+        - [Message without page info (older overlay), Replace everything — old behavior kept]
+        - [Old draft without page info, Treated as the receiving tab's page]
+        - ["Only the part after # differs", Same page]
+        - ["The part after ? differs", Different page]
+    evidence:
+      - { file: src/core/page.ts, lines: "1-7", commit: d898af4 }
+      - { commit: 9af6e18, file: src/bridge.ts, lines: "37" }
+
+  - id: s08
+    type: verify
+    title: Notes survive whatever order the tabs open in
+    plain: We checked with the tabs opened in different orders — both notes stay, and one Send delivers both. All 49 related automated tests pass.
+    tech: Verified with unit tests (session, bridge) and e2e. On HEAD (d898af4) test/core/session.test.ts and bridge.test.ts pass 49/49 on 2026-09-30, including 3 tests dedicated to R177 / Task 69 B1. e2e was not run for this check.
+    visual:
+      kind: table
+      caption: vitest 2.1.9 · d898af4 · 2026-09-30
+      columns: [Test, What it checks, Result]
+      rows:
+        - [session unit, per-page replacement (R177), ✅]
+        - [session unit, new draft stamped with sender's page · no duplicate id (B1), ✅]
+        - [bridge unit, two sockets · different pages · no duplicates in any order, ✅]
+        - [e2e, both tabs keep drafts · Send from either delivers both, ⏸ not run in this check]
+    evidence:
+      - { test: "test/core/session.test.ts › setDrafts stamps a brand-new draft with the message's own page… (Task 69 B1)" }
+      - { test: "test/core/bridge.test.ts › two sockets drafting on different pages keep each other's draft… (R177, Task 69 B1)" }
+      - { log: "npx vitest run test/core/session.test.ts test/core/bridge.test.ts → 49 passed (d898af4)" }
+
+related: []
+
+search:
+  symptoms: [a note disappears when writing in another tab, drafts get duplicated, wrong page label on a note, result depends on the order tabs are opened]
+  errors: []
+  keywords: [draft, setDrafts, samePage, multi-tab, global state, s.page, stamp, R177, Task 69 B1]

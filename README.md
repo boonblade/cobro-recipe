@@ -20,6 +20,7 @@
 |---|---|
 | `/cobro-recipe init` | 프로젝트에서 도메인 팩 추출 → `recipes/pack.yaml` |
 | `/cobro-recipe write <커밋 범위>` | git 이력·대화로 레시피 작성 → 검사 → HTML → 인덱스 |
+| `/cobro-recipe translate <R-###> <ko\|en>` | 요청 시 번역본 생성 (`recipe.<lang>.yaml`/`.html`) |
 | `/cobro-recipe search <증상>` | 쌓인 레시피에서 비슷한 문제 찾기 |
 | (자동 제안) | 까다로운 문제를 해결하면 Gate 점수로 레시피화를 제안 |
 
@@ -31,6 +32,7 @@
 
 - **프로젝트**: `init`이 `recipes/pack.yaml`에 `project`(이름·저장소 주소)를 넣는다. 레시피 첫 화면 이름표, 설명 카드, 서명, 인덱스, 검색 결과에 표시되고, 저장소 주소는 근거 링크에 쓰인다.
 - **언어**: 레시피 하나는 한 언어(`lang: ko | en`)로 쓴다. 사용자 지정 → 팩 `lang` → 대화 언어 순으로 정하고, 버튼·장면 이름 같은 화면 문구는 자동으로 바뀐다. 영어 프로젝트는 `packs/general-en.yaml`에서 시작한다.
+- **번역본**: 요청할 때만(`/cobro-recipe translate R-001 en`) 원본 옆에 `recipe.en.yaml` → `recipe.en.html`을 만든다. 두 HTML은 언어 전환 링크로 이어지고, 인덱스에서는 원본과 한 줄로 묶이며, 검색은 어느 언어로 해도 걸린다.
 
 ## 현재 단계: P1 완료
 
