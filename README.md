@@ -27,6 +27,10 @@ It detects your agent (Claude Code, Cursor, Codex, …; pick with `-a claude-cod
 
 Requires Python 3.8+ — standard library only; PyYAML is used if present.
 
+### Updating
+
+Skills do not update themselves. Run `npx skills update cobro-recipe` (add `-g` for a global install) when you want the new version — see [CHANGELOG.md](CHANGELOG.md). Your `recipe.yaml` files stay as they are; to redraw existing recipes with the new engine, run `/cobro-recipe upgrade` (or `render.py --all recipes`). Each HTML records the engine that drew it, so `render.py --all recipes --check` lists the outdated ones.
+
 ## Quick start
 
 1. Open Claude Code in your project and set it up once:
@@ -67,6 +71,7 @@ Requires Python 3.8+ — standard library only; PyYAML is used if present.
 | `/cobro-recipe init` | Extract the project's domain pack → `recipes/pack.yaml` |
 | `/cobro-recipe write [commit range]` | Write a recipe from git history and the session → validate → render → index |
 | `/cobro-recipe translate <R-###> <ko\|en>` | On request, write a translation next to the original (`recipe.<lang>.yaml` / `.html`) |
+| `/cobro-recipe upgrade` | After a skill update: re-render every recipe (and translation) with the new engine |
 | `/cobro-recipe search <symptom>` | Find similar recipes in `recipes/INDEX.json` |
 | (suggestion) | Right after a hard fix, Claude suggests a recipe when the Gate score is 4 or more — prompted by the `CLAUDE.md` line from `init`. It is the model's call, not a hook; an optional Stop hook is planned (P2) |
 
