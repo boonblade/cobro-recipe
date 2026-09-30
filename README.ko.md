@@ -27,6 +27,10 @@ npx skills remove cobro-recipe                   # 제거
 
 Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴다.
 
+### 업데이트
+
+스킬은 저절로 업데이트되지 않는다. 새 버전이 필요할 때 `npx skills update cobro-recipe`(전역 설치면 `-g`)를 실행한다 — 변경 내역은 [CHANGELOG.md](CHANGELOG.md). 기존 `recipe.yaml`은 그대로 두고, 이미 만든 레시피를 새 엔진으로 다시 그리려면 `/cobro-recipe upgrade`(또는 `render.py --all recipes`)를 실행한다. HTML마다 그린 엔진 버전이 기록되어 `render.py --all recipes --check`로 옛 버전을 찾을 수 있다.
+
 ## 빠른 시작
 
 1. 프로젝트에서 Claude Code를 열고 한 번만 설정한다:
@@ -67,6 +71,7 @@ Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴
 | `/cobro-recipe init` | 프로젝트 도메인 팩 추출 → `recipes/pack.yaml` |
 | `/cobro-recipe write [커밋 범위]` | git 이력·세션으로 레시피 작성 → 검사 → 렌더 → 인덱스 |
 | `/cobro-recipe translate <R-###> <ko\|en>` | 요청할 때만 원본 옆에 번역본 작성 (`recipe.<lang>.yaml` / `.html`) |
+| `/cobro-recipe upgrade` | 스킬 업데이트 뒤 모든 레시피(번역본 포함)를 새 엔진으로 다시 렌더 |
 | `/cobro-recipe search <증상>` | `recipes/INDEX.json`에서 비슷한 레시피 찾기 |
 | (자동 제안) | 까다로운 문제를 해결한 직후 Gate 4점 이상이면 Claude가 레시피화를 제안 — `init`이 넣은 `CLAUDE.md` 한 줄이 상기시킨다. 훅이 아니라 모델의 판단이며, 선택형 Stop 훅은 P2 예정 |
 

@@ -342,6 +342,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 | D15 | 언어 | 레시피 하나 = 한 언어(`lang: ko\|en`). 결정 순서: 사용자 지정 → 팩 `lang` → 대화 언어. 화면 문구는 자동 전환, 번역본은 요청 시만. 영어 시작 팩 `general-en` | 사용자 지정 |
 | D16 | 번역본 | 요청 시만 `recipe.<lang>.yaml`→`recipe.<lang>.html`. 원본과 id·장면 구성·근거 일치 검사, 상호 언어 링크, 인덱스에서 한 줄로 묶음 | 사용자 승인 |
 | D17 | 자동 제안 | 설치만으로는 훅 없음(모델 판단). `init`이 승인 후 CLAUDE.md에 표시 블록 한 줄 추가(`claude_md.py`). 선택형 Stop 훅은 P2 | 사용자 승인 |
+| D18 | 버전·업데이트 | 버전은 SKILL.md `metadata.version` 한 곳(0.1.0부터), CHANGELOG.md, 태그 `vX.Y.Z`. 스킬은 자동 업데이트 안 됨 → `npx skills update`. 렌더 HTML에 엔진 버전 기록, `render.py --all recipes [--check]`(= `upgrade`)로 일괄 재렌더 | 사용자 승인 |
 | D13 | 출력 스타일 | **손그림(sketch) 단일**. clean(스크롤형) 폐기, `render.style` 필드 삭제, 한 줄 교훈 `lesson` 추가 | 사용자 지정 |
 
 ---
