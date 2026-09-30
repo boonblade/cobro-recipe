@@ -10,11 +10,27 @@ import json
 import re
 from pathlib import Path
 
-__all__ = ["load_yaml", "load_yaml_text", "skill_dir", "find_pack"]
+__all__ = ["load_yaml", "load_yaml_text", "skill_dir", "find_pack", "variant_lang", "variants"]
+
+LANG_NAME = {"ko": "한국어", "en": "English"}
 
 
 def skill_dir() -> Path:
     return Path(__file__).resolve().parent.parent
+
+
+def variant_lang(path: str | Path) -> str | None:
+    """recipe.en.yaml → 'en', recipe.yaml → None(원본)"""
+    m = re.fullmatch(r"recipe\.([a-z]{2})\.yaml", Path(path).name)
+    return m.group(1) if m else None
+
+
+def variants(folder: str | Path) -> list[Path]:
+    """한 레시피 폴더의 원본 + 번역본 yaml (원본이 먼저)"""
+    folder = Path(folder)
+    orig = folder / "recipe.yaml"
+    trans = sorted(p for p in folder.glob("recipe.*.yaml") if variant_lang(p))
+    return ([orig] if orig.exists() else []) + trans
 
 
 def find_pack(recipe_path: str | Path, pack_id: str | None = None) -> Path | None:

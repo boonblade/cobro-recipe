@@ -31,6 +31,7 @@ description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발
 | `write [커밋 범위]` | 레시피 작성 → 검사 → 렌더 → 인덱스 | 아래 "write 절차" |
 | `render <recipe.yaml>` | `render.py` 실행 | – |
 | `index` | `build_index.py recipes` | – |
+| `translate <R-###> <ko\|en>` | 요청이 있을 때만: 원본 옆에 `recipe.<lang>.yaml` 작성 → 검사 → 렌더 → 인덱스 | 아래 "번역" |
 | `search <증상>` | `search.py "<증상>"` → 결과 요약. 맞는 레시피가 있으면 해당 `recipe.yaml`만 연다 | – |
 
 명령 없이 스킬이 불렸으면: 상황에 맞는 명령을 고르고, 모르겠으면 `search` → `write` 순으로 묻는다.
@@ -49,6 +50,14 @@ description: 개발 중 "다시 만날 문제"를 문제→시도→실패→발
 - `init`에서 팩 `lang`은 사용자의 대화 언어로 정하고 확인받는다. 영어 프로젝트의 시작 팩은 `packs/general-en.yaml`.
 - 대화 언어가 팩 `lang`과 다르면, 레시피에 `lang`을 명시하고 plain·tech·title·lesson을 그 언어로 쓴다.
 - 번역본이 필요하면 요청이 있을 때만 만든다(토큰 비용).
+
+## 번역 (`translate`)
+
+1. 원본 `recipe.yaml`을 `recipe.<lang>.yaml`로 복사하고 `lang: <lang>`을 넣는다.
+2. 사람이 읽는 글만 옮긴다: `title`, `summary`, `lesson`, 각 scene의 `title`·`plain`·`tech`, `visual`의 라벨·메모·캡션·표 칸·도식 문구, `search.symptoms`.
+3. 그대로 둔다: `id`, `slug`, `gate`, `as_of`, scene `id`·`type`·순서, 코드(`snippet`·`before`·`after` — 주석만 옮길 수 있다), 근거의 commit·file·lines·test·log, `search.errors`(실제 에러 문구).
+4. `plain`의 비유는 대상 언어 팩(`packs/general-en.yaml` 등)을 따른다. 직역하지 않는다.
+5. `validate.py recipe.<lang>.yaml`(원본과 id·장면 구성·근거 일치 검사) → `render.py`(원본을 다시 렌더하면 양쪽에 언어 전환 링크가 생긴다) → `build_index.py`.
 
 ## write 절차
 

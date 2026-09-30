@@ -8,4 +8,5 @@ cobro-recipe 스킬(P1)을 실제 프로젝트 [boonblade/cobro-mcp](https://git
 | `init` — 도메인 팩 추출 | [recipes/pack.yaml](recipes/pack.yaml) |
 | `write` — git 이력으로 레시피 작성 | [recipes/R-001-cross-tab-drafts/recipe.yaml](recipes/R-001-cross-tab-drafts/recipe.yaml) |
 | `render` | [recipes/R-001-cross-tab-drafts/recipe.html](recipes/R-001-cross-tab-drafts/recipe.html) |
+| `translate R-001 en` | [recipe.en.yaml](recipes/R-001-cross-tab-drafts/recipe.en.yaml) → [recipe.en.html](recipes/R-001-cross-tab-drafts/recipe.en.html) |
 | `index` | [recipes/INDEX.md](recipes/INDEX.md) · `recipes/INDEX.json` |

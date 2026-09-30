@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from recipe_io import find_pack, load_yaml  # noqa: E402
+from recipe_io import find_pack, load_yaml, variant_lang  # noqa: E402
 
 TYPES = ["problem", "observe", "attempt", "fail", "discovery", "solution", "edge", "verify"]
 REQUIRED_TYPES = ["problem", "observe", "attempt", "discovery", "solution", "verify"]
@@ -149,6 +149,30 @@ def check(path: Path) -> tuple[list[str], list[str]]:
     for i, t in enumerate(types[:-1]):
         if t == "attempt" and types[i + 1] not in ("fail", "discovery", "solution"):
             E.append(f"attempt(s{i + 1:02d}) 뒤에는 fail/discovery/solution이 와야 한다")
+
+    # 번역본(recipe.<lang>.yaml): 원본과 id·장면 구성·근거가 같아야 한다
+    vl = variant_lang(path)
+    if vl:
+        if r.get("lang") != vl:
+            E.append(f"번역본 파일명({path.name})과 lang({r.get('lang')})이 다르다")
+        orig_path = path.with_name("recipe.yaml")
+        if not orig_path.exists():
+            E.append("번역본인데 같은 폴더에 원본 recipe.yaml이 없다")
+        else:
+            o = load_yaml(orig_path)
+            if o.get("id") != r.get("id"):
+                E.append(f"번역본 id({r.get('id')}) ≠ 원본 id({o.get('id')})")
+            if o.get("lang", "ko") == r.get("lang"):
+                E.append("번역본 lang이 원본과 같다")
+            if [s.get("type") for s in o.get("scenes") or []] != types:
+                E.append("번역본 장면 구성(type 순서)이 원본과 다르다")
+            else:
+                for so, st in zip(o["scenes"], scenes):
+                    strip = lambda evs: [{k: v for k, v in ev.items() if k != "note"} for ev in evs or [] if isinstance(ev, dict)]
+                    if strip(so.get("evidence")) != strip(st.get("evidence")):
+                        W.append(f"scene {st.get('id')}: 근거(commit/file/test/log)가 원본과 다르다")
+            if (o.get("gate") or {}) != (r.get("gate") or {}):
+                W.append("gate가 원본과 다르다")
 
     # 규칙 6·8: 팩
     pack = find_pack(path, r.get("pack"))

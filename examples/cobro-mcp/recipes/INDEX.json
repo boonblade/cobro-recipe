@@ -53,7 +53,22 @@
     "date": "2026-09-24"
    },
    "yaml": "R-001-cross-tab-drafts/recipe.yaml",
-   "html": "R-001-cross-tab-drafts/recipe.html"
+   "html": "R-001-cross-tab-drafts/recipe.html",
+   "translations": [
+    {
+     "lang": "en",
+     "title": "Keeping drafts written in several tabs",
+     "plain": "A note written in one tab disappeared when you edited a note in another tab. We fixed it by letting each tab replace only its own page's notes, and by having the sending tab put the page label on its notes itself.",
+     "symptoms": [
+      "a note disappears when writing in another tab",
+      "drafts get duplicated",
+      "wrong page label on a note",
+      "result depends on the order tabs are opened"
+     ],
+     "html": "R-001-cross-tab-drafts/recipe.en.html",
+     "yaml": "R-001-cross-tab-drafts/recipe.en.yaml"
+    }
+   ]
   }
  ]
 }
