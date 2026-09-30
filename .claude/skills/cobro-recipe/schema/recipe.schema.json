@@ -49,6 +49,15 @@
     "summary": { "$ref": "#/$defs/twoLayer" },
     "scenes": { "type": "array", "items": { "$ref": "#/$defs/scene" }, "minItems": 6 },
     "related": { "type": "array", "items": { "type": "string", "pattern": "^R-\\d{3}$" } },
+    "search": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "symptoms": { "type": "array", "items": { "type": "string" } },
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "keywords": { "type": "array", "items": { "type": "string" } }
+      }
+    },
     "reconstructed": { "type": "boolean" }
   },
   "$defs": {
@@ -123,7 +132,7 @@
         { "if": { "properties": { "kind": { "const": "table" } } },
           "then": { "required": ["columns", "rows"] } },
         { "if": { "properties": { "kind": { "const": "diagram" } } },
-          "then": { "required": ["type", "spec"] } },
+          "then": { "required": ["type", "spec"], "properties": { "type": { "enum": ["flow", "pair", "before-after"] } } } },
         { "if": { "properties": { "kind": { "const": "3d" } } },
           "then": { "required": ["src"] } }
       ]

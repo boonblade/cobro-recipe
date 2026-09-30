@@ -10,7 +10,7 @@
 | 2 | `observe` | 관찰 | 🔍 | ● | 가능 | `svg` — 확대·하이라이트 |
 | 3 | `attempt` | 시도 | 🧪 | ● | 가능 | `code-diff` |
 | 4 | `fail` | 실패 | ❌ | 실패한 시도가 있으면 ● | 가능 | `compare-grid` |
-| 5 | `discovery` | 발견 | 🧠 | ● | – | `diagram` (diagram-design) / `svg` |
+| 5 | `discovery` | 발견 | 🧠 | ● | – | `diagram` (내장 도식) / `svg` |
 | 6 | `solution` | 해결 | 🛠 | ● | – | `code-diff` + `diagram` |
 | 7 | `edge` | Edge Case | ⚠️ | – | 가능 | `table` — 케이스 매트릭스 |
 | 8 | `verify` | 검증 | ✅ | ● | – | `table` — 테스트 매트릭스 |
@@ -45,5 +45,5 @@
 | `code-diff` | 코드 변경 | `lang`, `before`/`after` 또는 `snippet` | P0 |
 | `compare-grid` | 조건별 성공/실패 비교 | `items[].label`, `items[].state` | P0 |
 | `table` | 매트릭스 (edge, verify) | `columns`, `rows` | P0 |
-| `diagram` | 개념도·흐름도 → diagram-design 호출 | `type`, `spec` | P2 |
+| `diagram` | 내장 도식 부품: `flow`(단계 흐름) · `pair`(짝 연결) · `before-after`(전후 비교). 외부 스킬 호출 없음 | `type`, `spec` | P2 |
 | `3d` | Three.js 최소 재현 | `src` | P3 |

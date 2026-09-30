@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 | cobro-recipe Skill 기획서 v0.4 — 범용 스킬로 범위 조정 (도메인 팩 도입) |
+| 문서 | cobro-recipe Skill 기획서 v0.5 — 의존성 제거·토큰 원칙, 팩 자동 추출, 지식 검색 로드맵 |
 | 작성일 | 2026-09-30 |
-| 작성 | IT팀 |
+| 작성 | Blade Baek |
 | 상태 | **확정** — P0 진행 중 |
 
 ---
@@ -15,9 +15,9 @@
 
 1. 대상은 모든 작업이 아니라 **Gate 기준(§4.2)을 통과한 문제만** — 과잉 문서화 방지.
 2. 하나의 설명을 **2층 구조(쉬운 비유 + 기술 설명)**로 작성 — 현업 담당자·경영진과 개발자가 같은 문서를 공유.
-3. `diagram-design`은 "그림 그리는 Skill", `cobro-recipe`는 "무엇을 언제 보여줄지 정하는 연출 Skill" — 역할 분리로 충돌 없음.
+3. **다른 스킬·외부 라이브러리 의존 없음.** AI는 `recipe.yaml`(데이터)만 쓰고, HTML은 스크립트가 템플릿으로 만든다 — 가볍고 토큰이 적게 든다.
 4. 모든 서술은 **커밋·파일 근거(evidence) 필수** — AI가 시도 이력을 지어내는 것 차단.
-5. 누적 결과물은 **cobro-recipe Book** = 프로젝트·조직을 가리지 않고 쌓이는 문제 해결 노하우 DB.
+5. 스킬을 가져다 쓰는 프로젝트에서 **도메인 팩을 스스로 추출**하고 레시피를 쌓는다. 쌓인 레시피는 나중에 **지식 기반 검색**("이 증상 전에 본 적 있나?")으로 확장한다.
 
 ---
 
@@ -52,11 +52,12 @@
 - 레시피 데이터 스키마(`recipe.yaml`), Gate 기준, 쉬운 설명 가이드, 도메인 용어 사전
 - 스크롤형 HTML 렌더러 (단일 파일, 오프라인 열람 가능)
 - 레시피 목록(INDEX) 자동 갱신
-- `diagram-design` 연동 인터페이스
+- 도메인 팩 자동 추출 (`init`)
+- 내장 그림 부품 라이브러리 (외부 스킬·라이브러리 없이 SVG/Canvas)
 
 **Out of Scope (1차)**
-- 사내 포털/그룹웨어 게시 연동
-- 전문 검색 엔진, 권한 관리
+- 사내 포털/그룹웨어 게시 연동, 권한 관리
+- 의미 기반(임베딩) 검색 — P4 로드맵에서 검토
 - 실시간 3D 물리 시뮬레이션 재현 (Phase 3에서 정적 3D 뷰어까지만)
 
 ---
@@ -71,7 +72,7 @@
 │ 재료 수집    │    │ 쉬운 말 변환 │    │ & Render    │
 └─────────────┘    └─────────────┘    └─────────────┘
        ↑                                     │
-   Gate 판정                          diagram-design 호출
+   Gate 판정                    render.py (템플릿 + 내장 그림 부품)
 ```
 
 | 단계 | 입력 | 출력 |
@@ -113,7 +114,7 @@
 | 2 | `observe` 관찰 | 🔍 | ● | 확대·하이라이트 다이어그램 |
 | 3 | `attempt` 시도 (반복 가능) | 🧪 | ● | 코드 diff |
 | 4 | `fail` 실패 (반복 가능) | ❌ | 실패 존재 시 필수 | Before/After 비교, 사이즈별 그리드 |
-| 5 | `discovery` 발견 | 🧠 | ● | 개념 다이어그램 (diagram-design) |
+| 5 | `discovery` 발견 | 🧠 | ● | 개념 도식 (내장 부품) |
 | 6 | `solution` 해결 | 🛠 | ● | 코드 + 처리 흐름도 |
 | 7 | `edge` Edge Case | ⚠️ | 선택 | 케이스 매트릭스 |
 | 8 | `verify` 검증 | ✅ | ● | 테스트 매트릭스 (패턴×사이즈) |
@@ -197,27 +198,55 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 - 구현: 단일 HTML, `IntersectionObserver` + CSS `position: sticky` (프레임워크 없음)
 - 읽기 모드 토글: **쉬운 설명만 / 둘 다 / 기술만**
 - 인쇄·PDF 모드: 스크롤 효과 제거한 선형 문서로 출력 (보고용)
-- 시각화 종류: `image` / `code-diff` / `compare-grid` / `diagram`(→ diagram-design) / `3d`(Three.js 최소 재현, Phase 3) / `table`
+- 시각화 종류: `image` / `code-diff` / `compare-grid` / `table` / `diagram`(내장 도식 부품: 흐름·짝·전후 비교) / `svg`(부품으로 안 될 때만) / `3d`(P3)
 
-### 4.7 diagram-design 연동
+### 4.7 의존성 0 · 토큰 절약 원칙
 
-| 구분 | cobro-recipe (연출) | diagram-design (작화) |
-|---|---|---|
-| 책임 | 어떤 scene에 어떤 그림이 필요한지 결정 | 그림 자체 생성 |
-| 인터페이스 | `visual: { kind: diagram, type: flowchart, spec: ... }` | spec 받아 SVG 반환 |
-| 결과 | SVG를 scene 슬롯에 삽입 | 단독 사용도 가능 |
+| 원칙 | 내용 |
+|---|---|
+| 외부 스킬 호출 없음 | diagram-design 등 다른 스킬을 부르지 않는다. 필요한 그림은 **내장 그림 부품**으로 그린다 |
+| 외부 라이브러리 없음 | 결과 HTML은 단일 파일, 순수 HTML/CSS/SVG/Canvas. CDN·프레임워크 사용 안 함 |
+| 폰트 | 손그림 스타일만 웹폰트(Gaegu)를 **선택적으로** 사용, 오프라인이면 시스템 글꼴. 번들하지 않음(3MB) |
+| AI는 데이터만 | AI 출력은 `recipe.yaml`(장면당 수십 줄). HTML은 `render.py`가 템플릿으로 생성 → **HTML 생성 토큰 0** |
+| 그림은 부품 + 파라미터 | 장면 그림은 부품 이름과 값만 지정 (예: `compare-grid`, 항목 4개). 자유 SVG는 부품으로 안 될 때만 |
+| 필요할 때만 읽기 | `SKILL.md`는 짧게, 세부 규칙(`references/`)은 해당 단계에서만 읽는다 |
+| Gate 먼저 | 레시피 가치가 없으면 판정 단계(짧은 체크리스트)에서 끝낸다 |
+| 팩·인덱스는 캐시 | 팩 추출은 프로젝트당 1회(`recipes/pack.yaml`), 검색은 `INDEX.json`만 읽는다 (레시피 전체를 읽지 않음) |
 
-→ recipe는 diagram-design의 **호출자**. 역방향 의존 없음.
+### 4.8 도메인 팩 자동 추출
 
-### 4.8 호출 모드
+스킬을 가져다 쓰는 프로젝트에서 `/cobro-recipe init`을 한 번 실행하면, 스킬이 프로젝트를 훑어 팩을 만든다.
+
+| 단계 | 내용 |
+|---|---|
+| 1. 수집 | README, 문서, 코드의 도메인 용어(테이블·클래스·화면명), 커밋 메시지 상위 빈도어 — **샘플링**으로 토큰 제한 |
+| 2. 추출 | 업무 영역, 현업 독자, 비유 원천, 도메인 지식 예시, 주요 용어 10~20개와 비유 초안 |
+| 3. 확인 | 사용자에게 요약 1장 제시 → 수정·승인 |
+| 4. 저장 | `recipes/pack.yaml` (프로젝트 로컬 팩). 내장 팩(`general`, `garment-3d`)은 시작점·예시로만 사용 |
+| 5. 누적 | 레시피를 쓰며 새 용어·비유가 생기면 로컬 팩에 추가 |
+
+### 4.9 지식 기반 검색 (확장)
+
+| 단계 | 내용 |
+|---|---|
+| P2 | `build_index.py`가 `recipes/INDEX.json` 생성: 제목·요약·증상·에러 문구·태그·팩·관련 레시피 |
+| P2 | `/cobro-recipe search <증상>` — INDEX.json 키워드 검색 (토큰 최소) |
+| P3 | **디버깅 전 회상**: 스킬이 에러 문구·증상이 기존 레시피와 겹치면 먼저 알려 줌 ("R-003과 비슷합니다") |
+| P4 | 여러 프로젝트의 INDEX를 모은 **중앙 Recipe Book** + 의미 기반 검색 검토 |
+
+검색 품질을 위해 `recipe.yaml`에 선택 필드 `search: { symptoms, errors, keywords }`를 둔다.
+
+### 4.10 호출 모드
 
 | 명령 | 시점 | 동작 |
 |---|---|---|
+| `/cobro-recipe init` | 프로젝트 도입 시 1회 | 도메인 팩 자동 추출 → 확인 → `recipes/pack.yaml` |
 | (자동 제안) | 여러 시도 끝에 문제 해결 직후 | Gate 점수 계산 → "레시피로 남길까요? (7점)" 제안만 |
 | `/cobro-recipe capture` | 개발 진행 중 | 현재 시도/실패/발견을 inbox에 기록 |
 | `/cobro-recipe write [commit-range]` | 해결 후 | inbox + git 이력으로 `recipe.yaml` 초안 작성 |
 | `/cobro-recipe render <id>` | 검토 후 | HTML 생성 |
-| `/cobro-recipe index` | 수시 | Recipe Book 목록 갱신 |
+| `/cobro-recipe index` | 수시 | Recipe Book 목록 + `INDEX.json` 갱신 |
+| `/cobro-recipe search <증상>` | 수시 | INDEX.json에서 비슷한 레시피 찾기 |
 
 ---
 
@@ -242,13 +271,15 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 ├── scripts/
 │   ├── render.py                           # yaml → html (결정적 렌더)
 │   ├── validate.py                         # 스키마·evidence 검사
-│   └── build_index.py
-└── packs/                                  # 도메인 팩 (비유 사전 + 손그림 테마)
+│   └── build_index.py                      # INDEX.md + INDEX.json
+└── packs/                                  # 내장 팩 (init의 시작점·예시)
     ├── general.yaml                        # 기본
     └── garment-3d.yaml
 
 <대상 프로젝트>/recipes/                     # 레시피 저장소 (프로젝트별)
+├── pack.yaml                               # init으로 추출한 프로젝트 로컬 팩
 ├── INDEX.md / index.html                   # Recipe Book 목차
+├── INDEX.json                              # 검색용 인덱스 (build_index.py)
 ├── _inbox/                                 # capture 메모 (jsonl) — .gitignore 대상 (D5)
 └── R-003-seam-stitching/
     ├── recipe.yaml
@@ -264,10 +295,11 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 |---|---|---|---|
 | **P0** 설계 확정 (산출물 완료, 현업 리뷰 대기) | 1주 | 스키마·Gate·Scene 타입·도메인 팩 확정, **샘플 레시피 1건 수작업** (봉제선 벌어짐) | 해당 팩 리뷰어 1인 리뷰 통과 |
 | **P1** MVP | 2주 | SKILL.md, references, `scrolly.html` 템플릿, `render.py`/`validate.py`, write/render 모드 | 기존 이력으로 레시피 3건 생성 (**Web·ERP·인프라 각 1건**, general 팩) |
-| **P2** 캡처·연동 | 2주 | capture 모드(inbox), 자동 제안, 용어 사전 누적, diagram-design 연동, INDEX | 신규 개발 중 실시간 캡처 2건 |
-| **P3** 확장 | 2주~ | 3D scene 임베드(Three.js 최소 재현), Recipe Book 메인 페이지, 인쇄 모드 고도화 | 3D 포함 레시피 1건 |
+| **P2** 캡처·팩·검색 | 2주 | capture 모드(inbox), 자동 제안, **팩 자동 추출(init)**, 내장 그림 부품, `INDEX.json`·search | 신규 프로젝트 1곳에서 init → 실시간 캡처 2건 → 검색으로 재발견 |
+| **P3** 확장 | 2주~ | 디버깅 전 회상, sketch 스타일 템플릿, Recipe Book 메인 페이지, 3D 임베드 | 기존 레시피 자동 회상 1건 |
+| **P4** 지식 기반 | 추후 | 여러 프로젝트 INDEX 통합, 의미 기반 검색 검토 | – |
 
-총 **약 7주**, 투입: Web 파트 1명 × 50% (≈ 0.9 MM) + 파트별 레시피 제공자(ERP·SM·인프라 각 반나절) + 현업 리뷰어 (P0·P2 각 반나절)
+총 **약 7주** (P0~P3). 개발: Blade Baek. 검증: 도입 프로젝트별 레시피 제공자·현업 리뷰어 (각 반나절)
 
 ---
 
@@ -298,13 +330,16 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 |---|---|---|---|
 | D1 | Skill 이름 | `cobro-recipe` | 사용자 지정 |
 | D2 | 레시피 저장 위치 | 각 개발 프로젝트 repo 내 `recipes/` + 인덱스만 중앙 | 코드와 evidence 링크가 같은 repo에 있어야 추적 가능 |
-| D3 | 렌더링 방식 | 혼합 — 레이아웃·스타일은 템플릿 고정, scene 내 커스텀 시각화만 AI 생성 | 일관성 + 토큰 절감 |
+| D3 | 렌더링 방식 | 템플릿 + 내장 그림 부품. AI는 yaml만, 자유 SVG는 예외적으로만 | 일관성 + 토큰 절감 |
 | D4 | 캡처 방식 | 자동 제안 (P2) → 정착 후 Hook 검토 | 과잉 문서화 방지 |
 | D5 | `_inbox` git 관리 | `.gitignore` | 원재료는 로컬, 정제된 `recipe.yaml`만 commit |
 | D6 | 1차 독자 | 개발자 + 현업 담당자 (팩별) | 2층 설명 구조의 존재 이유 |
 | D7 | 3D 시각화 | P3로 연기 | MVP는 이미지/다이어그램/코드로 충분 |
 | D8 | 첫 파일럿 주제 | 봉제선 벌어짐 (garment-3d 팩) | Gate 7점, 스토리 구조가 가장 선명 |
 | D9 | 스킬 범위 | **범용** — 업종 차이는 도메인 팩으로 분리, 기본 팩 `general` | 사용자 지정 (2026-09-30) |
+| D10 | 의존성 | 다른 스킬·외부 라이브러리 없음 (diagram-design 연동 계획 폐기) | 가벼움 + 토큰 절감 (사용자 지정) |
+| D11 | 팩 생성 | 프로젝트에서 자동 추출(`init`) + 사용자 확인 | 사용자 지정 |
+| D12 | 확장 방향 | 지식 기반 검색 (INDEX.json → 회상 → 통합 검색) | 사용자 지정 |
 
 ---
 
@@ -316,7 +351,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 | 2 | 🔍 관찰 | 두 천의 끝점이 딱 맞지 않는다 | Panel A/B endpoint 불일치 | 끝점 확대 하이라이트 |
 | 3 | 🧪 시도 1 | 끝점을 억지로 맞춰봤다 | endpoint coordinate snapping | 코드 diff |
 | 4 | ❌ 실패 | 다른 사이즈에서 다시 벌어졌다 | 그레이딩 편차로 대응 관계 변동 | S/M/L/XL 비교 그리드 |
-| 5 | 🧠 발견 | 점 맞추기가 아니라 "어느 선끼리 붙는지"의 문제였다 | seam relationship 모델 부재 | 개념 다이어그램 (diagram-design) |
+| 5 | 🧠 발견 | 점 맞추기가 아니라 "어느 선끼리 붙는지"의 문제였다 | seam relationship 모델 부재 | 개념 도식 (내장 부품) |
 | 6 | 🛠 해결 | 봉제선마다 이름표를 붙이고, 같은 선끼리 맞춰 붙였다 | seam ID 기반 edge pair + 공통 edge 기준 transform | 코드 + 처리 흐름도 |
 | 7 | ⚠️ Edge | 곡선 봉제선은 길이가 달라 그대로 붙지 않는다 | curved seam 길이 불일치 (ease) | 직선/곡선 케이스 매트릭스 |
 | 8 | ✅ 검증 | 패턴 3종 × 사이즈 4개 모두 정상 | 12 case 테스트 통과 | 테스트 매트릭스 표 |

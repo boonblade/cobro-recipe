@@ -19,6 +19,7 @@
 | `summary` | `{plain, tech}` | ● | 레시피 전체 한 줄 요약 (2층) |
 | `scenes` | scene[] | ● | 6개 이상. [scene-types.md](scene-types.md) 순서 규칙 준수 |
 | `related` | `R-###`[] | – | 관련 레시피 |
+| `search` | `{symptoms, errors, keywords}` | – | 검색용. 현업이 말하는 증상, 실제 에러 문구, 추가 키워드 (INDEX.json에 들어감) |
 | `reconstructed` | bool | ● | 개발 중 캡처가 아니라 사후에 이력으로 재구성했으면 `true` |
 
 ## 2. scene 필드

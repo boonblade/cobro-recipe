@@ -42,7 +42,19 @@ body[data-read="tech"] .caption .p{display:none}
 .controls button{font:inherit;font-size:13px;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .controls button.play{background:var(--btn);color:var(--btn-ink);border-color:var(--btn);width:40px;height:40px;padding:0;font-size:15px}
 .controls button.ic{width:34px;height:34px;padding:0;font-size:13px}
-.controls button.spd{min-width:52px;font-variant-numeric:tabular-nums;font-weight:600}
+.controls button.spd{min-width:58px;font-variant-numeric:tabular-nums;font-weight:600}
+.controls button.spd::after{content:" ▾";font-size:10px;opacity:.6}
+.spdwrap{position:relative;display:inline-flex}
+.menu{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);z-index:20;min-width:132px;
+  background:var(--chrome);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 10px 30px rgba(40,30,20,.18)}
+.menu[hidden]{display:none}
+.menu .mh{font-size:11px;font-weight:700;color:var(--muted);padding:4px 10px 6px;letter-spacing:.03em}
+.controls .menu button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;border-radius:8px;
+  padding:8px 10px;font-variant-numeric:tabular-nums;text-align:left}
+.controls .menu button:hover,.controls .menu button:focus-visible{background:var(--line);outline:none}
+.controls .menu button small{font-size:11px;color:var(--muted)}
+.controls .menu button[aria-checked="true"]{color:var(--accent);font-weight:700}
+.controls .menu button[aria-checked="true"]::after{content:"✓"}
 .controls button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .controls input[type=range]{flex:1;min-width:60px;accent-color:var(--accent)}
 .controls .time{font:12px ui-monospace,Menlo,monospace;color:var(--muted);min-width:78px;text-align:right}
@@ -76,7 +88,10 @@ body[data-nav="scroll"] .spacer{height:900vh}
   <button class="play" id="play" aria-label="재생/일시정지" title="재생/일시정지 (Space)">❚❚</button>
   <button class="ic" id="prev" aria-label="이전 장면" title="이전 장면 (←)">⏮</button>
   <button class="ic" id="next" aria-label="다음 장면" title="다음 장면 (→)">⏭</button>
-  <button class="spd" id="speed" aria-label="재생 속도" title="재생 속도 (− / +)">1×</button>
+  <span class="spdwrap">
+    <button class="spd" id="speed" aria-label="재생 속도" aria-haspopup="menu" aria-expanded="false" aria-controls="speedMenu" title="재생 속도 (− / +)">1×</button>
+    <div class="menu" id="speedMenu" role="menu" aria-label="재생 속도" hidden></div>
+  </span>
   <input type="range" id="seek" min="0" step="0.01" aria-label="재생 위치">
   <span class="time" id="time">0.0 / 0.0</span>
   <span class="grp nav" role="group" aria-label="진행 방식">
@@ -697,14 +712,42 @@ const $ = id => document.getElementById(id);
 const seek = $('seek'), playBtn = $('play'), timeEl = $('time');
 seek.max = DURATION;
 let T = 0, playing = !REDUCED, last = performance.now(), nav = 'play', capIdx = -2, speed = 1;
-const speedBtn = $('speed');
+const speedBtn = $('speed'), speedMenu = $('speedMenu');
 const SPEED_KEY = 'cobro-recipe:speed';
+const SPEED_HINT = { 0.5: '느리게', 1: '보통', 2: '빠르게' };
+speedMenu.innerHTML = '<div class="mh">재생 속도</div>' + SPEEDS.map(v =>
+  `<button type="button" role="menuitemradio" aria-checked="false" data-v="${v}"><span>${v}×</span>${SPEED_HINT[v] ? `<small>${SPEED_HINT[v]}</small>` : ''}</button>`).join('');
+const speedItems = [...speedMenu.querySelectorAll('button')];
 function setSpeed(v){
   speed = v; speedBtn.textContent = `${v}×`;
+  speedItems.forEach(b => b.setAttribute('aria-checked', String(+b.dataset.v === v)));
   try { localStorage.setItem(SPEED_KEY, String(v)); } catch (e) {}
 }
 function stepSpeed(dir){ const i = SPEEDS.indexOf(speed); setSpeed(SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, i + dir))]); }
-speedBtn.onclick = () => setSpeed(SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length]);
+// 속도 드롭다운: 클릭하면 위로 펼쳐지는 목록에서 선택
+function openSpeedMenu(){
+  speedMenu.hidden = false; speedBtn.setAttribute('aria-expanded', 'true');
+  (speedItems.find(b => b.getAttribute('aria-checked') === 'true') || speedItems[0]).focus();
+}
+function closeSpeedMenu(refocus){
+  if (speedMenu.hidden) return;
+  speedMenu.hidden = true; speedBtn.setAttribute('aria-expanded', 'false');
+  if (refocus) speedBtn.focus();
+}
+speedBtn.onclick = () => speedMenu.hidden ? openSpeedMenu() : closeSpeedMenu();
+speedMenu.onclick = e => { const b = e.target.closest('button[data-v]'); if (b){ setSpeed(+b.dataset.v); closeSpeedMenu(true); } };
+speedMenu.onkeydown = e => {
+  const i = speedItems.indexOf(document.activeElement), n = speedItems.length;
+  if (e.key === 'ArrowDown') speedItems[(i + 1) % n].focus();
+  else if (e.key === 'ArrowUp') speedItems[(i - 1 + n) % n].focus();
+  else if (e.key === 'Home') speedItems[0].focus();
+  else if (e.key === 'End') speedItems[n - 1].focus();
+  else if (e.key === 'Escape' || e.key === 'Tab') { closeSpeedMenu(e.key === 'Escape'); if (e.key === 'Tab') return; }
+  else return;
+  e.preventDefault();
+};
+document.addEventListener('pointerdown', e => { if (!e.target.closest('.spdwrap')) closeSpeedMenu(); });
+setSpeed(1);
 try { const v = parseFloat(localStorage.getItem(SPEED_KEY)); if (SPEEDS.includes(v)) setSpeed(v); } catch (e) {}
 
 // 장면 이동: 각 장면은 바늘/연필이 출발하는 순간부터
@@ -730,6 +773,7 @@ playBtn.onclick = () => { if (nav === 'scroll') setNav('play'); setPlaying(!play
 seek.oninput = () => { T = +seek.value; if (nav === 'scroll') syncScrollFromT(); };
 seek.onpointerdown = () => setPlaying(false);
 addEventListener('keydown', e => {
+  if (!speedMenu.hidden) return;   // 속도 메뉴가 열려 있으면 메뉴가 키를 처리
   if (e.target !== document.body && e.target.tagName !== 'BUTTON') return;
   if (e.code === 'Space'){ if (e.target === document.body){ e.preventDefault(); playBtn.click(); } }
   else if (e.key === 'ArrowRight'){ e.preventDefault(); jump(1); }
