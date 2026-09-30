@@ -10,6 +10,8 @@ business_readers: 현업 담당자, 경영진
 reviewer: 해당 업무 현업 담당자 1인
 domain_knowledge_examples: [회계 마감 규칙, 재고 할당 순서, 권한·결재 정책, 법규·세무 기준]
 
+lang: ko
+
 sketch:
   protagonist: pencil        # 연필 — 지나간 길이 연필 점선으로 남는다
   trail: dash

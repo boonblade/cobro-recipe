@@ -46,7 +46,8 @@ def main(argv: list[str]) -> int:
         print("비슷한 레시피 없음")
         return 1
     for (sc, hits), x in ranked:
-        print(f"{x['id']}  점수 {sc}  {x['title']}  → {x['html'] or x['yaml']}")
+        proj = f"[{x['project']}] " if x.get("project") else ""
+        print(f"{x['id']}  점수 {sc}  {proj}{x['title']}  → {x['html'] or x['yaml']}")
         print(f"      {x['plain'][:90]}")
         print(f"      일치: {', '.join(dict.fromkeys(hits))}")
     return 0

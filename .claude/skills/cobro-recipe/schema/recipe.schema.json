@@ -158,6 +158,13 @@
     "lesson": {
       "type": "string",
       "description": "마지막에 크게 써지는 한 줄 교훈. 없으면 제목"
+    },
+    "lang": {
+      "enum": [
+        "ko",
+        "en"
+      ],
+      "description": "레시피 언어. 없으면 팩 lang, 그것도 없으면 ko"
     }
   },
   "$defs": {
