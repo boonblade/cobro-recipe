@@ -41,6 +41,8 @@ body[data-read="tech"] .caption .p{display:none}
   display:flex;align-items:center;gap:12px;padding:0 16px}
 .controls button{font:inherit;font-size:13px;border:1px solid var(--line);background:none;color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .controls button.play{background:var(--btn);color:var(--btn-ink);border-color:var(--btn);width:40px;height:40px;padding:0;font-size:15px}
+.controls button.ic{width:34px;height:34px;padding:0;font-size:13px}
+.controls button.spd{min-width:52px;font-variant-numeric:tabular-nums;font-weight:600}
 .controls button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .controls input[type=range]{flex:1;min-width:60px;accent-color:var(--accent)}
 .controls .time{font:12px ui-monospace,Menlo,monospace;color:var(--muted);min-width:78px;text-align:right}
@@ -51,6 +53,8 @@ body[data-nav="scroll"] .spacer{height:900vh}
   .controls{gap:8px;padding:0 10px}
   .controls .time{display:none}
   .grp.read{display:none}
+  .controls button.ic{display:none}
+  .controls button{padding:6px 9px}
   .caption{bottom:10px;padding:10px 12px}
   .caption .p{font-size:15px}
 }
@@ -69,7 +73,10 @@ body[data-nav="scroll"] .spacer{height:900vh}
 <div class="spacer" id="spacer"></div>
 
 <div class="controls">
-  <button class="play" id="play" aria-label="재생/일시정지">❚❚</button>
+  <button class="play" id="play" aria-label="재생/일시정지" title="재생/일시정지 (Space)">❚❚</button>
+  <button class="ic" id="prev" aria-label="이전 장면" title="이전 장면 (←)">⏮</button>
+  <button class="ic" id="next" aria-label="다음 장면" title="다음 장면 (→)">⏭</button>
+  <button class="spd" id="speed" aria-label="재생 속도" title="재생 속도 (− / +)">1×</button>
   <input type="range" id="seek" min="0" step="0.01" aria-label="재생 위치">
   <span class="time" id="time">0.0 / 0.0</span>
   <span class="grp nav" role="group" aria-label="진행 방식">
@@ -89,6 +96,15 @@ body[data-nav="scroll"] .spacer{height:900vh}
  * 좌표는 모두 종이 좌표(가로 1200 × 세로 4680), 가운데 기준
  * ===================================================================== */
 const PAPER = { w: 1200, h: 4680 };
+
+// 도메인 팩 테마 (packs/<id>.yaml의 sketch 값). 미리보기: 주소 뒤에 ?pack=general
+const PACK_THEMES = {
+  'garment-3d': { protagonist: 'needle', doodles: ['button', 'thread', 'pin', 'cross'], trail: [18, 12] },
+  'general':    { protagonist: 'pencil', doodles: ['star', 'arrow', 'spiral', 'box'],   trail: [14, 10] }
+};
+const PACK = (() => { try { const q = new URLSearchParams(location.search).get('pack'); if (q && PACK_THEMES[q]) return q; } catch (e) {} return 'garment-3d'; })();
+const THEME = PACK_THEMES[PACK];
+const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];   // 재생 속도 단계
 const DURATION = 36;
 
 const COLOR = {
@@ -337,8 +353,8 @@ function build(){
     front: pencil([[372,c1-120],[468,c1-138],[560,c1-118],[548,c1+140],[368,c1+140]], { closed: true }),
     back:  pencil([[574,c1-118],[664,c1-138],[760,c1-120],[764,c1+140],[602,c1+140]], { closed: true }),
     gap:   pencil([[560,c1-118],[574,c1-118],[602,c1+140],[548,c1+140]], { closed: true, jitter: .6 }),
-    arrow: pencil([[700,c1+212],[640,c1+196],[584,c1+152]]),
-    head:  pencil([[586,c1+174],[584,c1+152],[606,c1+156]])
+    arrow: pencil([[462,c1+178],[510,c1+172],[550,c1+150]]),
+    head:  pencil([[528,c1+148],[550,c1+150],[542,c1+170]])
   };
   // ② 관찰: 돋보기
   const c2 = SCENES[1].cy;
@@ -412,12 +428,20 @@ function build(){
 
   // 배경 낙서 층 (카메라보다 느리게: 위치 82%, 확대 72%)
   const r = rng(99); g.doodles = [];
+  const DOODLE = {
+    button: (x, y) => [pencil(circ(x, y, 14 + r()*10, 18), { closed: true })],
+    thread: (x, y) => [pencil([[x,y],[x+60,y+8],[x+120,y-4]])],
+    cross:  (x, y) => [pencil([[x-20,y-20],[x+20,y+20]]), pencil([[x+20,y-20],[x-20,y+20]])],
+    pin:    (x, y) => [pencil([[x,y],[x,y+50]]), pencil(circ(x, y-6, 7, 10), { closed: true })],
+    star:   (x, y) => [pencil(Array.from({length:10}, (_,i) => { const a = i/10*2*Math.PI - Math.PI/2, rr = i % 2 ? 9 : 22; return [x + rr*Math.cos(a), y + rr*Math.sin(a)]; }), { closed: true })],
+    arrow:  (x, y) => [pencil([[x-40,y+10],[x+40,y-10]]), pencil([[x+22,y-22],[x+40,y-10],[x+26,y+8]])],
+    spiral: (x, y) => [pencil(Array.from({length:40}, (_,i) => { const a = i*0.45, rr = 2 + i*0.7; return [x + rr*Math.cos(a), y + rr*Math.sin(a)]; }))],
+    box:    (x, y) => [pencil(rect(x-22, y-16, x+22, y+16), { closed: true })]
+  };
   for (let i = 0; i < 46; i++){
-    const x = -300 + r() * 1700, y = -200 + r() * 4000, k = r();
-    if (k < .3) g.doodles.push(pencil(circ(x, y, 14 + r()*10, 18), { closed: true }));                       // 단추
-    else if (k < .55) g.doodles.push(pencil([[x,y],[x+60,y+8],[x+120,y-4]]));                                 // 실
-    else if (k < .8) g.doodles.push(pencil([[x-20,y-20],[x+20,y+20]]), pencil([[x+20,y-20],[x-20,y+20]]));    // 가위표
-    else g.doodles.push(pencil([[x,y],[x,y+50]]), pencil(circ(x, y-6, 7, 10), { closed: true }));              // 시침핀
+    const x = -300 + r() * 1700, y = -200 + r() * 4000;
+    const kind = THEME.doodles[Math.floor(r() * THEME.doodles.length)];
+    g.doodles.push(...DOODLE[kind](x, y));
   }
   return g;
 }
@@ -473,6 +497,18 @@ function pointAt(f){
   let i = 1; while (i < cum.length - 1 && cum[i] < L) i++;
   const k = (L - cum[i-1]) / ((cum[i] - cum[i-1]) || 1);
   return [lerp(pts[i-1][0], pts[i][0], k), lerp(pts[i-1][1], pts[i][1], k)];
+}
+function drawProtagonist(n){ (THEME.protagonist === 'pencil' ? drawPencil : drawNeedle)(n); }
+function drawPencil(n){
+  ctx.save(); ctx.translate(n.x, n.y); ctx.rotate(n.a); ctx.scale(1 + n.sq, 1 - n.sq);
+  ctx.lineJoin = 'round'; ctx.strokeStyle = COLOR.ink; ctx.lineWidth = 2.5;
+  const poly = (pts, fillC) => { ctx.beginPath(); pts.forEach(([x,y], i) => i ? ctx.lineTo(x,y) : ctx.moveTo(x,y)); ctx.closePath(); ctx.fillStyle = fillC; ctx.fill(); ctx.stroke(); };
+  poly([[0,0],[-22,-8],[-22,8]], '#EAD6B0');                 // 깎은 나무
+  poly([[0,0],[-8,-3],[-8,3]], COLOR.ink);                    // 연필심
+  poly([[-22,-8],[-84,-8],[-84,8],[-22,8]], '#E8B84A');        // 몸통
+  poly([[-84,-8],[-94,-8],[-94,8],[-84,8]], '#B9B2A6');        // 쇠테
+  poly([[-94,-8],[-106,-7],[-108,0],[-106,7],[-94,8]], '#E59A8C');  // 지우개
+  ctx.restore();
 }
 function drawNeedle(n){
   ctx.save(); ctx.translate(n.x, n.y); ctx.rotate(n.a); ctx.scale(1 + n.sq, 1 - n.sq);
@@ -541,8 +577,8 @@ function drawScenes(t){
   // 실 땀 경로 (바늘이 지나간 만큼)
   const n = needleAt(t);
   const reached = t >= RETRACE[0] ? 1 : n ? n.f : 0;
-  stroke(G.path, reached, { dash: [18, 12], width: 3, color: COLOR.ink, alpha: .8 });
-  if (t > RETRACE[0]) stroke(G.path, EASE.ease(prog(t, ...RETRACE)), { dash: [18, 12], width: 5, color: COLOR.retrace });
+  stroke(G.path, reached, { dash: THEME.trail, width: 3, color: COLOR.ink, alpha: .8 });
+  if (t > RETRACE[0]) stroke(G.path, EASE.ease(prog(t, ...RETRACE)), { dash: THEME.trail, width: 5, color: COLOR.retrace });
 
   G.labels.forEach(L => label(L, t));
 
@@ -555,7 +591,7 @@ function drawScenes(t){
     write('앞판', 460, cy + 20, 40, t0 + 0.9, t); write('뒷판', 680, cy + 20, 40, t0 + 1.0, t);
     stroke(S.arrow, prog(t, t0 + 1.4, t0 + 1.7), { color: COLOR.check, width: 3 });
     stroke(S.head, prog(t, t0 + 1.65, t0 + 1.8), { color: COLOR.check, width: 3 });
-    write('틈!', 742, cy + 214, 48, t0 + 1.7, t, { color: COLOR.check }); }
+    write('틈!', 424, cy + 182, 44, t0 + 1.7, t, { color: COLOR.check }); }
 
   // ② 관찰
   { const S = G.s2, t0 = SCENES[1].t + 0.2, cy = SCENES[1].cy;
@@ -650,7 +686,7 @@ function drawScenes(t){
   write(TEXT.lesson.s, TEXT.lesson.x, TEXT.lesson.y, TEXT.lesson.size, TEXT.lesson.t, t);
   write(TEXT.sign.s, TEXT.sign.x, TEXT.sign.y, TEXT.sign.size, TEXT.sign.t, t, { color: COLOR.muted });
 
-  if (n) drawNeedle(n);
+  if (n) drawProtagonist(n);
 }
 function dot([x, y], color, r = 5){ ctx.save(); ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
 
@@ -660,10 +696,29 @@ function dot([x, y], color, r = 5){ ctx.save(); ctx.fillStyle = color; ctx.begin
 const $ = id => document.getElementById(id);
 const seek = $('seek'), playBtn = $('play'), timeEl = $('time');
 seek.max = DURATION;
-let T = 0, playing = !REDUCED, last = performance.now(), nav = 'play', capIdx = -2;
+let T = 0, playing = !REDUCED, last = performance.now(), nav = 'play', capIdx = -2, speed = 1;
+const speedBtn = $('speed');
+const SPEED_KEY = 'cobro-recipe:speed';
+function setSpeed(v){
+  speed = v; speedBtn.textContent = `${v}×`;
+  try { localStorage.setItem(SPEED_KEY, String(v)); } catch (e) {}
+}
+function stepSpeed(dir){ const i = SPEEDS.indexOf(speed); setSpeed(SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, i + dir))]); }
+speedBtn.onclick = () => setSpeed(SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length]);
+try { const v = parseFloat(localStorage.getItem(SPEED_KEY)); if (SPEEDS.includes(v)) setSpeed(v); } catch (e) {}
+
+// 장면 이동: 각 장면은 바늘/연필이 출발하는 순간부터
+const MARKS = [0].concat(SCENES.map((s, i) => NEEDLE_HOPS[i][0]), [OUTRO_T]);
+function jump(dir){
+  const target = dir > 0 ? MARKS.find(m => m > T + 0.05) : [...MARKS].reverse().find(m => m < T - 0.6);
+  T = target ?? (dir > 0 ? MARKS[MARKS.length - 1] : 0);
+  if (nav === 'scroll') syncScrollFromT();
+}
+$('prev').onclick = () => jump(-1);
+$('next').onclick = () => jump(1);
 
 function caption(t){
-  let idx = -1; SCENES.forEach((s, i) => { if (t >= s.t) idx = i; });
+  let idx = -1; SCENES.forEach((s, i) => { if (t >= NEEDLE_HOPS[i][0]) idx = i; });   // 장면 = 주인공이 출발하는 순간부터
   if (t >= OUTRO_T) idx = 99;
   if (idx === capIdx) return; capIdx = idx;
   const c = idx === -1 || idx === 99 ? { k: idx === 99 ? '정리 · R-001' : INTRO.k, plain: INTRO.plain, tech: INTRO.tech }
@@ -674,7 +729,14 @@ function setPlaying(p){ playing = p; playBtn.textContent = p ? '❚❚' : '▶';
 playBtn.onclick = () => { if (nav === 'scroll') setNav('play'); setPlaying(!playing); };
 seek.oninput = () => { T = +seek.value; if (nav === 'scroll') syncScrollFromT(); };
 seek.onpointerdown = () => setPlaying(false);
-addEventListener('keydown', e => { if (e.code === 'Space' && e.target === document.body){ e.preventDefault(); playBtn.click(); } });
+addEventListener('keydown', e => {
+  if (e.target !== document.body && e.target.tagName !== 'BUTTON') return;
+  if (e.code === 'Space'){ if (e.target === document.body){ e.preventDefault(); playBtn.click(); } }
+  else if (e.key === 'ArrowRight'){ e.preventDefault(); jump(1); }
+  else if (e.key === 'ArrowLeft'){ e.preventDefault(); jump(-1); }
+  else if (e.key === '+' || e.key === '='){ stepSpeed(1); }
+  else if (e.key === '-' || e.key === '_'){ stepSpeed(-1); }
+});
 
 function setNav(m){
   nav = m; document.body.dataset.nav = m;
@@ -698,7 +760,7 @@ addEventListener('resize', resize);
 
 function frame(now){
   const dt = Math.min(0.1, (now - last) / 1000); last = now;
-  if (playing && nav === 'play'){ T += dt; if (T >= DURATION) T = 0; }
+  if (playing && nav === 'play'){ T += dt * speed; if (T >= DURATION) T = 0; }
   BOIL = REDUCED ? 0 : Math.floor(now / 1000 * PENCIL.boilFps);
   render(T); caption(T);
   seek.value = T; timeEl.textContent = `${T.toFixed(1)} / ${DURATION.toFixed(1)}`;

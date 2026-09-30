@@ -10,6 +10,12 @@
     "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
     "title": { "type": "string", "minLength": 1 },
     "domain": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "pack": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "default": "general" },
+    "render": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "style": { "enum": ["clean", "sketch"], "default": "clean" } }
+    },
     "gate": {
       "type": "object",
       "additionalProperties": false,
@@ -36,7 +42,7 @@
     },
     "audience": {
       "type": "array",
-      "items": { "enum": ["dev", "pattern-room", "md", "exec"] },
+      "items": { "enum": ["dev", "business", "ops", "exec"] },
       "minItems": 1,
       "uniqueItems": true
     },

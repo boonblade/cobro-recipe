@@ -9,11 +9,13 @@
 | `id` | `R-###` | ● | 레시피 번호. 프로젝트 안에서 유일 |
 | `slug` | kebab-case | ● | 폴더명: `recipes/<id>-<slug>/` |
 | `title` | string | ● | "~하기" 형태 권장 (예: 패턴 두 장을 봉제하기) |
-| `domain` | string[] | ● | 검색용 태그 (three.js, seam, dxf, grading …) |
+| `domain` | string[] | ● | 검색용 태그 (oracle, batch, three.js, seam …) |
+| `pack` | string | – | 도메인 팩 id. 생략 시 `general` ([domain-packs.md](domain-packs.md)) |
+| `render.style` | enum | – | `clean`(기본, 스크롤형) / `sketch`(손그림 모션) |
 | `gate` | `{score, signals}` | ● | Gate 판정 결과. score ≥ 4 |
 | `status` | enum | ● | `draft` → `review` → `published`. 형식 시연용은 `sample` |
 | `as_of` | `{commit?, date}` | ● | 이 레시피가 유효한 코드 기준점 |
-| `audience` | enum[] | ● | `dev` / `pattern-room` / `md` / `exec` |
+| `audience` | enum[] | ● | `dev` 개발자 / `business` 현업 담당자 / `ops` 운영·인프라 / `exec` 경영진 |
 | `summary` | `{plain, tech}` | ● | 레시피 전체 한 줄 요약 (2층) |
 | `scenes` | scene[] | ● | 6개 이상. [scene-types.md](scene-types.md) 순서 규칙 준수 |
 | `related` | `R-###`[] | – | 관련 레시피 |
@@ -47,5 +49,6 @@ JSON Schema로 표현하기 어려운 규칙:
 3. `discovery`가 `solution`보다 앞.
 4. `gate.score` = `signals` 점수 합 (S1·S2·S3 = 2점, 나머지 1점).
 5. scene `id` 중복 없음, `s01`부터 연속.
-6. `plain`에 영문 기술 용어(glossary의 `term`)가 들어가면 경고.
+6. `plain`에 영문 기술 용어(팩 사전의 `term`)가 들어가면 경고.
 7. `status ≥ review`인데 evidence가 비었거나 `note`만 있으면 오류.
+8. `pack`에 해당하는 `packs/<pack>.yaml`이 있어야 한다.
