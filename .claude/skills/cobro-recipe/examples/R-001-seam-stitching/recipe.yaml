@@ -121,3 +121,8 @@ scenes:
     evidence: [{ note: 샘플 — 테스트 결과 예시 }]
 
 related: [R-004]
+
+search:
+  symptoms: [봉제선이 벌어짐, 사이즈 바꾸면 패턴이 안 붙음, 옆선 틈]
+  errors: []
+  keywords: [seam, snapping, tolerance, grading, edge pair]

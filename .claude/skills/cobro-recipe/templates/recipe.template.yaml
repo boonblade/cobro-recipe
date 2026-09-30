@@ -92,3 +92,8 @@ scenes:
     evidence: [{ test: }]
 
 related: []
+
+search:             # 선택 — 지식 검색용
+  symptoms: []      # 현업이 말하는 증상
+  errors: []        # 실제 에러 문구
+  keywords: []
