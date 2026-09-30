@@ -47,3 +47,10 @@
 | 형식 샘플 | [R-001 봉제선](.claude/skills/cobro-recipe/examples/R-001-seam-stitching/) — 수작업 손그림 목업 `mockup.html` (`status: sample`) |
 
 다음 단계 P2: capture(작업 중 기록), 자동 제안 정착, 도식 부품 보강, 도메인별 추가 검증.
+
+## 라이선스
+
+[MIT](LICENSE) © 2026 Blade Baek. 스킬 폴더에도 같은 [LICENSE](.claude/skills/cobro-recipe/LICENSE)가 들어 있어, 폴더만 복사해도 고지가 함께 간다.
+
+- 손글씨 폰트 Gaegu(SIL OFL 1.1)는 포함하지 않는다. 레시피 HTML이 온라인일 때 Google Fonts에서 불러오고, 없으면 시스템 글꼴을 쓴다.
+- `examples/cobro-mcp/`의 코드 발췌·커밋 인용은 [cobro-mcp](https://github.com/boonblade/cobro-mcp)(Apache-2.0)에서 가져왔다.
