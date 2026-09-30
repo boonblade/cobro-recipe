@@ -1,8 +1,12 @@
 # 로컬 도메인 팩 — /cobro-recipe init 결과 (cobro-mcp)
-# 수집 범위(샘플링): README.ko.md 앞 60줄, package.json, src/ 디렉터리 목록, 최근 커밋 제목 50개
+# 수집 범위(샘플링): README.ko.md 앞 60줄, package.json, src/ 디렉터리 목록, 최근 커밋 제목 50개, git remote
 # terms의 review: false = 사용자 확인 전 초안
 
 id: cobro-mcp
+project:
+  name: cobro-mcp
+  url: https://github.com/boonblade/cobro-mcp
+lang: ko
 name: Cobro (co-browse MCP)
 description: 브라우저에서 요소를 골라 메모를 Send하면 코딩 에이전트 대화에 맥락과 함께 도착하는 MCP 서버·페이지 오버레이
 metaphor_source: 사무실 협업 (포스트잇 메모, 메모함, 회의실 칠판, 사내 전화선, 우편 창구)

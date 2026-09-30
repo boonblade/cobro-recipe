@@ -1,0 +1,37 @@
+# Domain pack: general (English)
+# Default metaphor dictionary for English-speaking projects. Metaphors come from everyday office life.
+# Structure and usage: references/domain-packs.md
+
+id: general-en
+name: General (English)
+description: Software recipes for any domain (web, ERP, infra, data)
+metaphor_source: everyday office life (front desk, queue ticket, library index, moving house, bank transfer)
+business_readers: business users, managers
+reviewer: one business user of the feature
+domain_knowledge_examples: [month-end closing rules, stock allocation order, approval policies, tax/legal rules]
+lang: en
+
+sketch:
+  protagonist: pencil
+  trail: dash
+  doodles: [star, arrow, spiral, box]
+
+terms:
+  - { term: API, plain: "a service counter — fill in the form, get a fixed answer back", review: false }
+  - { term: cache, plain: keeping the papers you use most on your desk, review: false }
+  - { term: database index, plain: the index at the back of a book, review: false }
+  - { term: queue, plain: a take-a-number waiting line, review: false }
+  - { term: timeout, plain: hanging up after waiting too long on hold, review: false }
+  - { term: retry, plain: calling again, review: false }
+  - { term: race condition, plain: two people booking the same seat at the same moment, review: false }
+  - { term: deadlock, plain: two cars in a narrow alley each waiting for the other to back up, review: false }
+  - { term: transaction, plain: "a bank transfer: all of it happens or none of it does", review: false }
+  - { term: rollback, plain: undo, review: false }
+  - { term: migration, plain: moving house and fitting your things into the new rooms, review: false }
+  - { term: schema, plain: a form template, review: false }
+  - { term: "null", plain: an empty box on the form, review: false }
+  - { term: encoding, plain: "the agreement on how letters are stored (a mismatch turns text into gibberish)", review: false }
+  - { term: memory leak, plain: a tap left slightly open, review: false }
+  - { term: deploy, plain: putting the new version on the shelf, review: false }
+  - { term: global state, plain: one shared whiteboard — only the last writer's note survives, review: false }
+  - { term: concurrency, plain: several counters serving customers at once, review: false }

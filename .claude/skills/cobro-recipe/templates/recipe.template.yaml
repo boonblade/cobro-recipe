@@ -7,7 +7,8 @@ id: R-000
 slug: short-kebab-title
 title: ~하기
 domain: []
-pack: general       # packs/<id>.yaml — 생략 시 general
+pack: general       # packs/<id>.yaml — 생략 시 general (프로젝트에 recipes/pack.yaml이 있으면 그것)
+lang: ko            # ko | en — 생략 시 팩 lang
 gate:
   score: 0          # 4 이상
   signals: []       # S1 ~ S7
