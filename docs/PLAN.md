@@ -2,10 +2,10 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 | cobro-recipe Skill 기획서 v0.2 (초안) — Skill 이름 확정 |
+| 문서 | cobro-recipe Skill 기획서 v0.3 — 의사결정 D1~D8 확정 |
 | 작성일 | 2026-09-30 |
 | 작성 | IT팀 |
-| 상태 | **검토 요청** (§9 의사결정 항목 컨펌 필요) |
+| 상태 | **확정** — P0 진행 중 |
 
 ---
 
@@ -231,6 +231,10 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 │   ├── scene-types.md                      # §4.3
 │   ├── plain-language-guide.md             # §4.4
 │   └── recipe-schema.md                    # §4.5
+├── schema/
+│   └── recipe.schema.json                  # recipe.yaml 기계 검증 (JSON Schema)
+├── examples/
+│   └── R-001-seam-stitching/               # P0 파일럿 (샘플)
 ├── templates/
 │   ├── recipe.template.yaml
 │   └── scrolly.html                        # 렌더 템플릿
@@ -243,7 +247,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 
 <대상 프로젝트>/recipes/                     # 레시피 저장소 (프로젝트별)
 ├── INDEX.md / index.html                   # Recipe Book 목차
-├── _inbox/                                 # capture 메모 (jsonl)
+├── _inbox/                                 # capture 메모 (jsonl) — .gitignore 대상 (D5)
 └── R-003-seam-stitching/
     ├── recipe.yaml
     ├── recipe.html
@@ -256,7 +260,7 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 
 | Phase | 기간 | 내용 | 완료 기준 |
 |---|---|---|---|
-| **P0** 설계 확정 | 1주 | 스키마·Gate·Scene 타입 확정, **샘플 레시피 1건 수작업** (봉제선 벌어짐) | 패턴실 1인 리뷰 통과 |
+| **P0** 설계 확정 (산출물 완료, 패턴실 리뷰 대기) | 1주 | 스키마·Gate·Scene 타입 확정, **샘플 레시피 1건 수작업** (봉제선 벌어짐) | 패턴실 1인 리뷰 통과 |
 | **P1** MVP | 2주 | SKILL.md, references, `scrolly.html` 템플릿, `render.py`/`validate.py`, write/render 모드 | 기존 이력으로 레시피 3건 생성 |
 | **P2** 캡처·연동 | 2주 | capture 모드(inbox), 자동 제안, 용어 사전 누적, diagram-design 연동, INDEX | 신규 개발 중 실시간 캡처 2건 |
 | **P3** 확장 | 2주~ | 3D scene 임베드(Three.js 최소 재현), Recipe Book 메인 페이지, 인쇄 모드 고도화 | 3D 포함 레시피 1건 |
@@ -286,18 +290,18 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 
 ---
 
-## 9. 의사결정 요청 사항 (컨펌 필요)
+## 9. 의사결정 결과 (2026-09-30 확정)
 
-| # | 항목 | 옵션 | 권고안 |
+| # | 항목 | 결정 | 사유 |
 |---|---|---|---|
-| D1 | Skill 이름 | `cobro-recipe` | **확정** (2026-09-30) |
-| D2 | 레시피 저장 위치 | ① 각 개발 프로젝트 repo 내 `recipes/` ② Skill repo(`cobro-recipe`)에 중앙 집중 | **① + 인덱스만 중앙** — 코드와 evidence 링크가 같은 repo에 있어야 추적 가능 |
-| D3 | 렌더링 방식 | ① 템플릿 + 스크립트(결정적) ② AI가 매번 HTML 자유 생성 ③ 혼합 | **③** — 레이아웃·스타일은 템플릿 고정, scene 내 커스텀 시각화만 AI 생성 (일관성 + 토큰 절감) |
-| D4 | 캡처 방식 | ① 수동 명령만 ② 자동 제안 ③ Hook으로 세션 종료 시 강제 점검 | **② (P2)** → 정착 후 ③ 검토 |
-| D5 | `_inbox` git 관리 | ① commit ② `.gitignore` | **②** — 원재료는 로컬, 정제된 `recipe.yaml`만 commit |
-| D6 | 1차 독자 | ① 개발자만 ② 개발자 + 패턴실/MD | **②** — 2층 설명 구조의 존재 이유 |
-| D7 | 3D 시각화 | ① P1부터 포함 ② P3로 연기 | **②** — MVP는 이미지/다이어그램/코드로 충분 |
-| D8 | 첫 파일럿 주제 | 봉제선 벌어짐 / DXF spline / winding order | **봉제선 벌어짐** — Gate 7점, 스토리 구조가 가장 선명 |
+| D1 | Skill 이름 | `cobro-recipe` | 사용자 지정 |
+| D2 | 레시피 저장 위치 | 각 개발 프로젝트 repo 내 `recipes/` + 인덱스만 중앙 | 코드와 evidence 링크가 같은 repo에 있어야 추적 가능 |
+| D3 | 렌더링 방식 | 혼합 — 레이아웃·스타일은 템플릿 고정, scene 내 커스텀 시각화만 AI 생성 | 일관성 + 토큰 절감 |
+| D4 | 캡처 방식 | 자동 제안 (P2) → 정착 후 Hook 검토 | 과잉 문서화 방지 |
+| D5 | `_inbox` git 관리 | `.gitignore` | 원재료는 로컬, 정제된 `recipe.yaml`만 commit |
+| D6 | 1차 독자 | 개발자 + 패턴실/MD | 2층 설명 구조의 존재 이유 |
+| D7 | 3D 시각화 | P3로 연기 | MVP는 이미지/다이어그램/코드로 충분 |
+| D8 | 첫 파일럿 주제 | 봉제선 벌어짐 | Gate 7점, 스토리 구조가 가장 선명 |
 
 ---
 
