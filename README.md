@@ -4,7 +4,7 @@
 
 **Turn the problems you solved into recipes anyone can read.**
 
-![A recipe scene: the discovery drawn in pencil on grid paper, with plain and technical explanations and evidence links below](assets/recipe-en.png)
+![A recipe drawn in pencil on grid paper: the camera moves from the problem to the failed attempt and the discovery, then pulls back to the takeaway — with plain and technical explanations and evidence links below](assets/demo-en.gif)
 
 Don't just keep the fix. Keep how you got there.
 
