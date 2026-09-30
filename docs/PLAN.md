@@ -263,8 +263,6 @@ reconstructed: false   # 사후 재구성 시 true 표기 (실시간 캡처 아�
 │   └── recipe-schema.md                    # §4.5
 ├── schema/
 │   └── recipe.schema.json                  # recipe.yaml 기계 검증 (JSON Schema)
-├── examples/
-│   └── R-001-seam-stitching/               # P0 파일럿 (샘플)
 ├── templates/
 │   ├── recipe.template.yaml
 │   └── scrolly.html                        # 렌더 템플릿

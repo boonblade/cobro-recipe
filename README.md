@@ -99,6 +99,7 @@ Scene layout, timing and camera are computed from the recipe by the template —
 | [`references/`](.claude/skills/cobro-recipe/references/) | Gate criteria · scene types · plain-language guide · schema · domain packs |
 | [`packs/`](.claude/skills/cobro-recipe/packs/) | Built-in packs: `general` (Korean, default) · `general-en` · `garment-3d` |
 | [`examples/cobro-mcp/`](examples/cobro-mcp/) | Real run on [cobro-mcp](https://github.com/boonblade/cobro-mcp): extracted pack, R-001 in Korean and English |
+| [`examples/garment-3d-seam/`](examples/garment-3d-seam/) | Format sample for the `garment-3d` pack and the hand-drawn mockup that shaped the style |
 | [`docs/`](docs/) | Plan and design notes (Korean) |
 
 ## Status
