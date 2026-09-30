@@ -136,6 +136,10 @@ def check(path: Path) -> tuple[list[str], list[str]]:
         if str(s.get("plain", "")).count(".") > 3:
             W.append(f"{where}: plain이 길다 (2문장 이내 권장)")
 
+    # S1(서로 다른 접근 2회 이상)이면 적어도 한 번은 실패했다 — 실패 장면을 빠뜨리지 않았는지
+    if "S1" in sig and "fail" not in types:
+        W.append("Gate S1(시도 2회 이상)인데 fail 장면이 없다 — 실패한 시도를 fail로 남겼는지 확인")
+
     # 규칙 1~3
     if types and types[0] != "problem":
         E.append("첫 scene은 problem 이어야 한다")
