@@ -23,16 +23,20 @@
 | `/cobro-recipe search <증상>` | 쌓인 레시피에서 비슷한 문제 찾기 |
 | (자동 제안) | 까다로운 문제를 해결하면 Gate 점수로 레시피화를 제안 |
 
+## 출력 형식
+
+레시피 HTML은 **손그림 모션 한 가지**다. 모눈종이 위를 카메라가 따라가며 장면이 연필로 그려지고, 하단 카드에 쉬운 설명·기술 설명·근거 링크가 나온다. 재생/스크롤, 속도(0.5×~2×), 장면 이동을 지원하고, 인쇄하거나 스크립트가 꺼져 있으면 정적 문서로 보인다.
+
 ## 현재 단계: P1 완료
 
 | 구성 | 경로 |
 |---|---|
 | 스킬 본체 | [SKILL.md](.claude/skills/cobro-recipe/SKILL.md) |
 | 스크립트 | [scripts/](.claude/skills/cobro-recipe/scripts/) — `validate.py` · `render.py` · `build_index.py` · `search.py` · `recipe_io.py`(내장 YAML 파서) |
-| 템플릿 | [templates/clean.html](.claude/skills/cobro-recipe/templates/clean.html) · [recipe.template.yaml](.claude/skills/cobro-recipe/templates/recipe.template.yaml) |
+| 템플릿 | [templates/sketch.html](.claude/skills/cobro-recipe/templates/sketch.html) (손그림 엔진) · [recipe.template.yaml](.claude/skills/cobro-recipe/templates/recipe.template.yaml) |
 | 규칙 | [references/](.claude/skills/cobro-recipe/references/) — Gate · Scene 타입 · 쉬운 설명 · 스키마 · 도메인 팩 |
 | 내장 팩 | [packs/general.yaml](.claude/skills/cobro-recipe/packs/general.yaml) (기본) · [packs/garment-3d.yaml](.claude/skills/cobro-recipe/packs/garment-3d.yaml) |
 | **실전 검증** | [examples/cobro-mcp/](examples/cobro-mcp/) — cobro-mcp에서 `init` → R-001 "여러 탭에서 쓴 초안 지키기" |
-| 형식 샘플 | [R-001 봉제선](.claude/skills/cobro-recipe/examples/R-001-seam-stitching/) — clean·sketch 목업 (`status: sample`) |
+| 형식 샘플 | [R-001 봉제선](.claude/skills/cobro-recipe/examples/R-001-seam-stitching/) — 수작업 손그림 목업 `mockup.html` (`status: sample`) |
 
 다음 단계 P2: capture(작업 중 기록), 자동 제안 정착, 도식 부품 보강, 도메인별 추가 검증.

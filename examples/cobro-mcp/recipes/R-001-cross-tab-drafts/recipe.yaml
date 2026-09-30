@@ -6,8 +6,6 @@ slug: cross-tab-drafts
 title: 여러 탭에서 쓴 초안 지키기
 domain: [overlay, core, multi-tab, draft, state]
 pack: cobro-mcp
-render:
-  style: clean
 gate:
   score: 6
   signals: [S1, S2, S4, S7]
@@ -20,6 +18,7 @@ summary:
   plain: 한 탭에서 써 둔 메모가 다른 탭에서 메모를 고치면 사라졌다. 탭마다 자기 페이지 메모만 바꾸게 하고, 메모의 페이지 이름표도 보낸 탭이 직접 달게 해서 해결했다.
   tech: draft 메시지 처리를 전체 교체에서 페이지 단위 교체로 바꾸고(R177), 새 초안의 page를 전역 s.page가 아니라 메시지를 보낸 탭의 page로 찍으며 교체 대상 id는 유지 목록에서 제외했다(Task 69 B1).
 reconstructed: true
+lesson: 메모의 이름표는 보낸 탭이 단다
 
 scenes:
   - id: s01
