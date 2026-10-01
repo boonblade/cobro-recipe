@@ -180,4 +180,6 @@ def main(argv: list[str]) -> int:
     return 0
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")  # 한글 Windows(cp949) 파이프에서 ✓ 등 출력 오류 방지
+    sys.stderr.reconfigure(encoding="utf-8")
     sys.exit(main(sys.argv[1:]))

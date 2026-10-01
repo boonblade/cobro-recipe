@@ -11,6 +11,10 @@ python3 .claude/skills/cobro-recipe/scripts/render.py --all recipes           # 
 
 Or just ask Claude: `/cobro-recipe upgrade`.
 
+## [Unreleased]
+
+- **Fix** — scripts no longer crash with `UnicodeEncodeError` when output goes to a pipe on Korean Windows (cp949); stdout/stderr are now UTF-8.
+
 ## [0.1.0] — 2026-09-30
 
 First public release.
