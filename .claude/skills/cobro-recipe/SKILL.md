@@ -2,7 +2,7 @@
 name: cobro-recipe
 license: MIT (LICENSE)
 metadata:
-  version: "0.1.1"
+  version: "0.2.0"
 description: "Record a hard-won fix as a recipe (problem, attempts, failures, discovery, solution) in recipe.yaml plus a hand-drawn animated HTML, with plain-language and technical explanations backed by commit and test evidence, and search past recipes. Use when the user runs /cobro-recipe or says \"save this as a recipe\", \"write this up as a recipe\", \"have we seen this before\", \"레시피로 남겨\", \"레시피화\", \"이 문제 정리해서 남겨\", \"전에 이런 문제 있었나\". Right after solving a tricky bug or design problem through several attempts, compute the Gate score and only suggest a recipe; never write one unasked. General-purpose for any domain, Korean or English; depends on no other skill or external library. / 개발 중 다시 만날 문제의 해결 과정을 쉬운 설명·기술 설명·근거가 붙은 손그림 레시피로 남기고 검색한다."
 ---
 
@@ -15,7 +15,7 @@ description: "Record a hard-won fix as a recipe (problem, attempts, failures, di
 1. **Gate 먼저.** 4점 미만이면 레시피를 만들지 않는다. 4점 이상이어도 제안만 하고 승인을 받는다.
 2. **근거 없는 서술 금지.** 모든 scene은 commit·file·test·log 근거를 단다. 지어내지 않는다. 사후에 이력으로 재구성했으면 `reconstructed: true`.
 3. **실패를 지우지 않는다.** 실패한 시도는 반드시 `fail` scene으로 남긴다.
-4. **2층 설명.** `plain`은 독자가 매일 보는 것에 빗댄 쉬운 말(2문장 이내), `tech`는 정확한 기술 설명(3문장 이내).
+4. **2층 설명.** `plain`은 이 문제에 없던 사람도 이해하는 설명(2문장 이내), `tech`는 정확한 기술 설명(3문장 이내). `plain` 기본 문체는 **명료형**(실제 용어 + 처음 한 번 풀이)이고, 업무 말·비유로 쓰는 현장형은 `plain_style: field`일 때만 쓴다. 쉬운 단어보다 이해되는 것이 먼저다.
 5. **토큰 절약.** AI는 `recipe.yaml`만 쓴다. HTML·인덱스는 스크립트가 만든다. 아래 표에서 **지금 단계에 필요한 참조만** 읽는다.
 6. **의존성 0.** 다른 스킬을 부르지 않는다. 그림은 내장 부품(`visual.kind`)으로만 지정한다. 스크립트는 Python 3 표준 라이브러리만 쓴다.
 
@@ -44,7 +44,7 @@ description: "Record a hard-won fix as a recipe (problem, attempts, failures, di
 
 1. `recipes/pack.yaml`이 이미 있으면 그것을 보여 주고 끝낸다.
 2. **샘플링만** 한다: README 앞부분, 최상위 디렉터리 구조, 설정 파일(package.json 등)의 이름·설명, `git log --format=%s -50`, 도메인 용어가 많은 파일명. 파일 전체를 읽지 않는다.
-3. `packs/general.yaml` 구조를 따라 `project`(`name`: package.json 이름 또는 저장소 이름, `url`: `git remote get-url origin`을 https로), `lang`(아래 "언어"), `id`, `name`, `description`, `metaphor_source`, `business_readers`, `reviewer`, `domain_knowledge_examples`, `sketch`, `terms`(10~20개, `review: false`)를 채운다.
+3. `packs/general.yaml` 구조를 따라 `project`(`name`: package.json 이름 또는 저장소 이름, `url`: `git remote get-url origin`을 https로), `lang`(아래 "언어"), `plain_style`(기본 `clear` — 주 독자가 현업이면 `field`를 제안), `id`, `name`, `description`, `metaphor_source`, `business_readers`, `reviewer`, `domain_knowledge_examples`, `sketch`, `terms`(10~20개, `review: false`)를 채운다.
 4. 요약을 보여 주고 승인·수정을 받은 뒤 저장한다.
 5. **자동 제안 장치**: 스킬 설명만으로는 해결 직후 제안을 잊을 수 있다. 사용자에게 프로젝트 `CLAUDE.md`에 한 줄 블록을 넣을지 묻고, 승인하면 `claude_md.py --lang <팩 lang>`을 실행한다(여러 번 실행해도 한 번만 들어가고, `--remove`로 뺀다). `recipes/_inbox/`를 `.gitignore`에 넣는 것도 같이 묻는다.
 
@@ -61,14 +61,14 @@ description: "Record a hard-won fix as a recipe (problem, attempts, failures, di
 1. 원본 `recipe.yaml`을 `recipe.<lang>.yaml`로 복사하고 `lang: <lang>`을 넣는다.
 2. 사람이 읽는 글만 옮긴다: `title`, `summary`, `lesson`, 각 scene의 `title`·`plain`·`tech`, `visual`의 라벨·메모·캡션·표 칸·도식 문구, `search.symptoms`.
 3. 그대로 둔다: `id`, `slug`, `gate`, `as_of`, scene `id`·`type`·순서, 코드(`snippet`·`before`·`after` — 주석만 옮길 수 있다), 근거의 commit·file·lines·test·log, `search.errors`(실제 에러 문구).
-4. `plain`의 비유는 대상 언어 팩(`packs/general-en.yaml` 등)을 따른다. 직역하지 않는다.
+4. `plain`은 원본과 같은 문체(`plain_style`)로 옮긴다. 현장형의 업무 말·비유는 대상 언어 팩(`packs/general-en.yaml` 등)을 따르고, 직역하지 않는다.
 5. `validate.py recipe.<lang>.yaml`(원본과 id·장면 구성·근거 일치 검사) → `render.py`(원본을 다시 렌더하면 양쪽에 언어 전환 링크가 생긴다) → `build_index.py`.
 
 ## write 절차
 
 1. **재료 수집**: 커밋 범위의 `git log --format='%h %ad %s' --date=short`와 `git show --stat`. 핵심 커밋만 `git show <sha> -- <파일>`로 필요한 부분을 본다. 세션 대화에 시도·실패가 있으면 그것도 쓴다.
 2. **Gate**: `references/gate-criteria.md`로 신호를 고르고 점수를 계산한다(근거 있는 신호만).
-3. **작성**: `templates/recipe.template.yaml`을 복사해 채운다. scene 순서·타입은 `references/scene-types.md`, 쉬운 말은 `references/plain-language-guide.md`와 팩 사전(`recipes/pack.yaml` → `packs/general.yaml`)을 따른다. 새 비유는 로컬 팩 `terms`에 추가한다. 검색용 `search.symptoms`(현업이 말하는 증상)·`errors`(실제 에러 문구)를 채운다. **YAML 주의**: `#`, `? `, `: `, `[ ] { } ,`가 든 문자열과 에러 문구는 큰따옴표로 감싸고, 여러 줄은 `|`를 쓴다.
+3. **작성**: `templates/recipe.template.yaml`을 복사해 채운다. scene 순서·타입은 `references/scene-types.md`, `plain`은 `references/plain-language-guide.md`(문체: 레시피 → 팩 `plain_style` → `clear`)와 팩 사전(`recipes/pack.yaml` → `packs/general.yaml`)을 따른다. 새 용어는 로컬 팩 `terms`에 추가한다. 검색용 `search.symptoms`(현업이 말하는 증상)·`errors`(실제 에러 문구)를 채운다. **YAML 주의**: `#`, `? `, `: `, `[ ] { } ,`가 든 문자열과 에러 문구는 큰따옴표로 감싸고, 여러 줄은 `|`를 쓴다.
 4. **검사**: `validate.py recipes/<폴더>/recipe.yaml` — 오류 0이 될 때까지 고친다. 경고는 판단해서 고친다.
 5. **렌더**: `render.py recipes/<폴더>/recipe.yaml` (근거 링크 주소는 팩 `project.url`, 다르면 `--repo-url`) — 손그림 모션 HTML 한 가지. 장면 배치·시간표·카메라는 엔진이 자동으로 정하므로 AI가 HTML을 쓰지 않는다. 마지막에 크게 써지는 한 줄 교훈은 `lesson`에 적는다(없으면 제목).
 6. **인덱스**: `build_index.py recipes`

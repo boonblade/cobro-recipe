@@ -23,8 +23,9 @@ project:                        # 로컬 팩만 — init이 채운다. 첫 화�
   name: cobro-mcp               #   package.json name / 저장소 이름
   url: https://github.com/org/repo   # git remote → 근거 링크 기본 주소
 lang: ko                        # 프로젝트 기본 언어 (ko | en)
+plain_style: clear              # plain 문체 기본값: clear(명료형) | field(현장형) — plain-language-guide.md §1
 description: 이 팩을 쓰는 레시피 범위
-metaphor_source: 비유를 가져올 곳 (plain 설명 작성 기준)
+metaphor_source: 현장형(field) plain에 쓸 업무 말·비유를 가져올 곳
 business_readers: 이 팩의 비개발 독자 (예: 패턴실, 회계팀)
 reviewer: 비유가 맞는지 확인할 사람
 domain_knowledge_examples: [Gate S5 판단 예시]
@@ -32,11 +33,13 @@ sketch:
   protagonist: pencil | needle  # 손그림 스타일에서 경로를 따라가는 주인공
   trail: dash | stitch          # 지나간 길 표현
   doodles: [...]                # 배경 낙서 종류
-terms:                          # 기술 용어 → 쉬운 비유 사전
-  - { term: cache, plain: 자주 쓰는 서류를 책상 위에 올려 두기, review: false }
+terms:                          # 기술 용어 사전 — note: 명료형의 첫 등장 풀이 / plain: 현장형에서 바꿔 쓸 말
+  - { term: cache, plain: 자주 쓰는 서류를 책상 위에 올려 두기, note: 자주 쓰는 데이터를 가까운 곳에 복사해 둠, review: false }
 ```
 
-## 3. 비유 찾는 순서
+## 3. 용어 찾는 순서
+
+명료형(`clear`)은 실제 이름을 쓰고 처음 한 번 `note`(없으면 `plain`)로 풀이한다. 현장형(`field`)은 `plain`으로 바꿔 쓴다. 사전을 찾는 순서는 같다.
 
 1. 로컬 팩(`recipes/pack.yaml`) 또는 레시피의 팩(`pack`) 사전에서 찾는다.
 2. 없으면 `general` 사전에서 찾는다.
@@ -53,7 +56,7 @@ terms:                          # 기술 용어 → 쉬운 비유 사전
 프로젝트당 1회. 결과는 `recipes/pack.yaml`에 저장하고 이후에는 다시 읽기만 한다 (토큰 절약).
 
 1. **수집 (샘플링)**: README·docs 첫 부분, 디렉터리 구조, DB 테이블·클래스·화면명 상위 빈도 용어, 최근 커밋 메시지 50개. 파일 전체를 읽지 않는다.
-2. **추출**: `project`(이름: package.json·저장소 이름, url: `git remote get-url origin`을 https로), `lang`(사용자의 대화 언어 기준, README 언어는 참고), `name`, `description`, `metaphor_source`, `business_readers`, `domain_knowledge_examples`, 주요 용어 10~20개와 비유 초안(`review: false`).
+2. **추출**: `project`(이름: package.json·저장소 이름, url: `git remote get-url origin`을 https로), `lang`(사용자의 대화 언어 기준, README 언어는 참고), `plain_style`(기본 `clear`, 주 독자가 현업이면 `field` 제안), `name`, `description`, `metaphor_source`, `business_readers`, `domain_knowledge_examples`, 주요 용어 10~20개와 비유 초안(`review: false`).
 3. **내장 팩 참고**: 가장 가까운 내장 팩(`general` 등)의 용어·테마를 시작값으로 쓴다.
 4. **확인**: 요약 1장을 사용자에게 보여 주고 수정·승인을 받은 뒤 저장한다.
 5. **누적**: 레시피 작성 중 새 용어·비유가 생기면 로컬 팩에 추가한다.

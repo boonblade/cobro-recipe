@@ -9,6 +9,7 @@ title: ~하기
 domain: []
 pack: general       # packs/<id>.yaml — 생략 시 general (프로젝트에 recipes/pack.yaml이 있으면 그것)
 lang: ko            # ko | en — 생략 시 팩 lang
+# plain_style: field  # clear(명료형, 기본) | field(현장형) — 생략 시 팩 plain_style
 gate:
   score: 0          # 4 이상
   signals: []       # S1 ~ S7

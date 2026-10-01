@@ -11,6 +11,14 @@ python3 .claude/skills/cobro-recipe/scripts/render.py --all recipes           # 
 
 Or just ask Claude: `/cobro-recipe upgrade`.
 
+## [0.2.0] — 2026-10-01
+
+- **Plain style** — `plain` now defaults to **clear** wording: real terms, explained once the first time they appear, no metaphors that replace names or causes, no version / experiment / flag codes. Metaphor-heavy plain text read easily for business readers but confused developers (blind A/B on a real recipe: developers preferred clear in 12 of 17 scenes, a pattern maker preferred field wording in 14 of 17).
+- **`plain_style: clear | field`** — new optional field on recipes and packs (recipe → pack → `clear`). `field` keeps the old approach: the business readers' everyday working language from the pack dictionary.
+- **Guide** — rewritten plain-language guide with shared rules for both styles: no metaphors that contradict the real process, one structural metaphor at most, keep clues the next scene depends on.
+- **Validator** — accepts `plain_style`; the English-term warning on `plain` now applies only to `field`.
+- Existing recipes are untouched and still valid. Re-rendering is optional (the renderer did not change).
+
 ## [0.1.1] — 2026-10-01
 
 - **Fix** — discovery scenes zoomed onto the drawing only and cut off the scene title; the zoom now keeps the title in frame. Run `/cobro-recipe upgrade` to re-render existing recipes.

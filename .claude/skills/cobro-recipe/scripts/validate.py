@@ -29,9 +29,10 @@ KINDS = {
     "3d": [["src"]],
 }
 DIAGRAM_TYPES = ["flow", "pair", "before-after"]
+PLAIN_STYLES = ["clear", "field"]
 SIGNAL_POINTS = {"S1": 2, "S2": 2, "S3": 2, "S4": 1, "S5": 1, "S6": 1, "S7": 1}
 TOP_KEYS = {"id", "slug", "title", "domain", "pack", "gate", "status", "as_of", "audience",
-            "summary", "lesson", "lang", "scenes", "related", "search", "reconstructed"}
+            "summary", "lesson", "lang", "plain_style", "scenes", "related", "search", "reconstructed"}
 SHA = re.compile(r"^[0-9a-f]{7,40}$")
 
 
@@ -63,6 +64,8 @@ def check(path: Path) -> tuple[list[str], list[str]]:
             E.append(f"audience 값 오류: {a} (허용: {', '.join(AUDIENCE)})")
     if r.get("lang") not in (None, "ko", "en"):
         E.append(f"lang 값 오류: {r['lang']} (허용: ko, en)")
+    if r.get("plain_style") not in (None, *PLAIN_STYLES):
+        E.append(f"plain_style 값 오류: {r['plain_style']} (허용: {', '.join(PLAIN_STYLES)})")
     if "lesson" in r and not isinstance(r["lesson"], str):
         E.append("lesson은 한 줄 문자열이어야 한다")
 
@@ -184,20 +187,25 @@ def check(path: Path) -> tuple[list[str], list[str]]:
         E.append(f"팩을 찾을 수 없음: {r.get('pack', 'general')} (recipes/pack.yaml 또는 packs/<id>.yaml)")
     else:
         try:
-            raw = load_yaml(pack).get("terms") or []
+            pk = load_yaml(pack)
+            raw = pk.get("terms") or []
+            if pk.get("plain_style") not in (None, *PLAIN_STYLES):
+                E.append(f"팩 {pack.name}: plain_style 값 오류 {pk['plain_style']} (허용: {', '.join(PLAIN_STYLES)})")
             for t in raw:
                 extra = set(t) - {"term", "plain", "note", "review"}
                 if extra:
                     E.append(f"팩 {pack.name}: 용어 {t.get('term')}에 모르는 키 {sorted(extra)} — 값에 쉼표가 있으면 큰따옴표로 감싸라")
             terms = [str(t.get("term", "")) for t in raw]
         except Exception as e:  # noqa: BLE001
-            terms = []
+            pk, terms = {}, []
             W.append(f"팩 읽기 실패: {pack} ({e})")
-        for s in scenes:
+        # 영문 용어 경고는 현장형만 — 명료형은 실제 이름을 쓰는 것이 규칙이다
+        style = r.get("plain_style") or pk.get("plain_style") or "clear"
+        for s in scenes if style == "field" else []:
             p = str(s.get("plain", ""))
             hit = [t for t in terms if t and re.search(rf"(?<![A-Za-z]){re.escape(t)}(?![A-Za-z])", p, re.I)]
             if hit:
-                W.append(f"scene {s.get('id')}: plain에 기술 용어 {hit} — 팩 사전의 비유로 바꾸기 권장")
+                W.append(f"scene {s.get('id')}: plain에 기술 용어 {hit} — 현장형(field)이면 팩 사전의 업무 말로 바꾸기 권장")
     return E, W
 
 

@@ -12,6 +12,7 @@
 | `domain` | string[] | ● | 검색용 태그 (oracle, batch, three.js, seam …) |
 | `pack` | string | – | 도메인 팩 id. 생략 시 `general` ([domain-packs.md](domain-packs.md)) |
 | `lang` | `ko` \| `en` | – | 레시피 언어. 생략 시 팩 `lang` → `ko`. 화면 문구(버튼·장면 이름)도 이 언어로 바뀐다 |
+| `plain_style` | `clear` \| `field` | – | `plain` 문체. 생략 시 팩 `plain_style` → `clear`(명료형). [plain-language-guide.md](plain-language-guide.md) §1 |
 | `lesson` | string | – | 마지막 장면에서 크게 써지는 한 줄 교훈. 없으면 제목을 쓴다 |
 | `gate` | `{score, signals}` | ● | Gate 판정 결과. score ≥ 4 |
 | `status` | enum | ● | `draft` → `review` → `published`. 형식 시연용은 `sample` |
@@ -57,7 +58,7 @@ JSON Schema로 표현하기 어려운 규칙:
 3. `discovery`가 `solution`보다 앞.
 4. `gate.score` = `signals` 점수 합 (S1·S2·S3 = 2점, 나머지 1점).
 5. scene `id` 중복 없음, `s01`부터 연속.
-6. `plain`에 영문 기술 용어(팩 사전의 `term`)가 들어가면 경고.
+6. 문체가 `field`(현장형)이면 `plain`에 영문 기술 용어(팩 사전의 `term`)가 들어갈 때 경고. `clear`(명료형)는 실제 이름을 쓰는 것이 규칙이라 검사하지 않는다.
 7. `status ≥ review`인데 evidence가 비었거나 `note`만 있으면 오류.
 8. `pack`에 해당하는 `packs/<pack>.yaml`이 있어야 한다.
 9. `gate.signals`에 S1이 있는데 `fail` scene이 없으면 경고 (시도가 여러 번이면 적어도 한 번은 실패했다).
