@@ -106,7 +106,6 @@ Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴
 | [`references/`](.claude/skills/cobro-recipe/references/) | Gate 기준 · Scene 타입 · 쉬운 설명 가이드 · 스키마 · 도메인 팩 |
 | [`packs/`](.claude/skills/cobro-recipe/packs/) | 내장 팩: `general`(한국어, 기본) · `general-en` · `garment-3d` |
 | [`examples/cobro-mcp/`](examples/cobro-mcp/) | [cobro-mcp](https://github.com/boonblade/cobro-mcp) 실전 적용: 추출한 팩, R-001 한국어·영어 |
-| [`examples/garment-3d-seam/`](examples/garment-3d-seam/) | `garment-3d` 팩 형식 샘플과 손그림 스타일을 정할 때 만든 수작업 목업 |
 
 ## 진행 상황
 
