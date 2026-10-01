@@ -107,11 +107,10 @@ Python 3.8+ 필요 — 표준 라이브러리만 쓰고, PyYAML이 있으면 쓴
 | [`packs/`](.claude/skills/cobro-recipe/packs/) | 내장 팩: `general`(한국어, 기본) · `general-en` · `garment-3d` |
 | [`examples/cobro-mcp/`](examples/cobro-mcp/) | [cobro-mcp](https://github.com/boonblade/cobro-mcp) 실전 적용: 추출한 팩, R-001 한국어·영어 |
 | [`examples/garment-3d-seam/`](examples/garment-3d-seam/) | `garment-3d` 팩 형식 샘플과 손그림 스타일을 정할 때 만든 수작업 목업 |
-| [`docs/`](docs/) | 기획서·설계 메모 |
 
 ## 진행 상황
 
-P1 완료: 스킬, 스크립트, 손그림 렌더러, 번역본, cobro-mcp 실전 적용. 다음(P2): 작업 중 시도 기록(capture), 더 확실한 제안을 위한 선택형 Stop 훅, 휴대폰 세로 화면 배치, 여러 영역에서 레시피 추가 검증. [docs/PLAN.md](docs/PLAN.md) 참고.
+P1 완료: 스킬, 스크립트, 손그림 렌더러, 번역본, cobro-mcp 실전 적용. 다음(P2): 작업 중 시도 기록(capture), 더 확실한 제안을 위한 선택형 Stop 훅, 휴대폰 세로 화면 배치, 여러 영역에서 레시피 추가 검증.
 
 ## 라이선스
 

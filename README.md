@@ -107,11 +107,10 @@ Scene layout, timing and camera are computed from the recipe by the template —
 | [`packs/`](.claude/skills/cobro-recipe/packs/) | Built-in packs: `general` (Korean, default) · `general-en` · `garment-3d` |
 | [`examples/cobro-mcp/`](examples/cobro-mcp/) | Real run on [cobro-mcp](https://github.com/boonblade/cobro-mcp): extracted pack, R-001 in Korean and English |
 | [`examples/garment-3d-seam/`](examples/garment-3d-seam/) | Format sample for the `garment-3d` pack and the hand-drawn mockup that shaped the style |
-| [`docs/`](docs/) | Plan and design notes (Korean) |
 
 ## Status
 
-P1 is done: skill, scripts, hand-drawn renderer, translations, and a real-project run on cobro-mcp. Next (P2): capturing attempts while you work, an optional Stop hook for more reliable suggestions, a portrait layout for phones, and more recipes to validate across domains. See [docs/PLAN.md](docs/PLAN.md).
+P1 is done: skill, scripts, hand-drawn renderer, translations, and a real-project run on cobro-mcp. Next (P2): capturing attempts while you work, an optional Stop hook for more reliable suggestions, a portrait layout for phones, and more recipes to validate across domains.
 
 ## License
 
