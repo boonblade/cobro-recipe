@@ -11,8 +11,9 @@ python3 .claude/skills/cobro-recipe/scripts/render.py --all recipes           # 
 
 Or just ask Claude: `/cobro-recipe upgrade`.
 
-## [Unreleased]
+## [0.1.1] — 2026-10-01
 
+- **Fix** — discovery scenes zoomed onto the drawing only and cut off the scene title; the zoom now keeps the title in frame. Run `/cobro-recipe upgrade` to re-render existing recipes.
 - **Fix** — scripts no longer crash with `UnicodeEncodeError` when output goes to a pipe on Korean Windows (cp949); stdout/stderr are now UTF-8.
 
 ## [0.1.0] — 2026-09-30

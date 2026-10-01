@@ -552,7 +552,7 @@ function build(){
       stop: left ? [cx - r - 40, fy + 8] : [textX + measure(L[0], LS) + 44, fy + 8],
       endMark: markShapes(sc.type === 'fail' ? 'ng' : 'ok', left ? textX + measure(L[L.length - 1], LS) + 44 : cx - r - 40, lastY, 24),
       box: { x: PW / 2, y: (ky - 20 + bottom) / 2, w: 1180, h: bottom - ky + 100 },
-      zoom: { x: PW / 2, y: partTop + part.h / 2, w: 980, h: part.h + 120 }
+      zoom: { x: PW / 2, y: (fy - LS + bottom + 60) / 2, w: 980, h: bottom + 60 - (fy - LS) }   // 장면 제목까지 포함
     };
     g.st.push(s);
     y = bottom + 190;
